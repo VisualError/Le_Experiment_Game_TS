@@ -1,5 +1,3 @@
-import { IClass } from "interfaces/IClass";
-import { IModuleLoader } from "interfaces/IModuleLoader";
 import ModuleLoaderAbstract from "./AbstractClasses/ModuleLoaderAbstract";
 
 class ModuleLoader extends ModuleLoaderAbstract {
