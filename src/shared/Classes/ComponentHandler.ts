@@ -8,7 +8,7 @@ const CollectionService = game.GetService("CollectionService");
 class ComponentHandler extends ModuleLoaderAbstract {
 	Start(): void {
 		this.cacheHandler = new CacheHandler<Map<string, Component>>();
-		this.Init(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
+		super.Init(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
 	}
 	LoadClass<T>(ModuleScript: ModuleScript): T {
 		print(`Loading ${ModuleScript.Name} Component`);

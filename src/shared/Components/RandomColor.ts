@@ -21,7 +21,7 @@ class RandomColor extends Component {
 	}
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (true) {
+			while (!this.Dispose) {
 				this.Part.BrickColor = BrickColor.random();
 				task.wait(0.5);
 			}

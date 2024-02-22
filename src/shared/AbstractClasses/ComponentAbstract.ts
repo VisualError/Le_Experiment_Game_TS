@@ -7,7 +7,9 @@ abstract class AbstractComponent implements IComponent {
 	constructor(Instance: Instance) {
 		this.Instance = Instance;
 		this.Threads = new Map<string, thread>();
+		this.Dispose = false;
 	}
+	Dispose: boolean;
 	StartCoroutine(method: Callback, identifier: string): void {
 		const newThread = coroutine.create(method);
 		this.Threads.set(identifier, newThread);
@@ -16,6 +18,7 @@ abstract class AbstractComponent implements IComponent {
 	StopCoroutine(): void {}
 	Start(): void {}
 	Destroy(): void {
+		this.Dispose = true;
 		for (const [_, thread] of this.Threads) {
 			if (coroutine.status(thread) !== "dead") {
 				coroutine.close(thread);

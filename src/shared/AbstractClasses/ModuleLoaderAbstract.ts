@@ -18,9 +18,9 @@ abstract class ModuleLoaderAbstract implements IModuleLoader {
 			}
 		}
 	}
-
-	GetModule(name: string) {
-		throw "NOT IMPLEMENTED";
+	GetModule<T>(name: string): T | undefined {
+		// Assuming CacheHandler has a method get(key: string) that retrieves a value by key
+		return this.cacheHandler.get(name) as T | undefined;
 	}
 	Init(ModuleScripts: ModuleScript[]): void {
 		this.LoadClasses(ModuleScripts);
