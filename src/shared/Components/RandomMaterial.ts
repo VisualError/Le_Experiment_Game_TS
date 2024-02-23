@@ -15,7 +15,7 @@ class RandomMaterial extends Component {
 	}
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Dispose) {
+			while (!this.Disposed) {
 				const materials = Enum.Material.GetEnumItems();
 				const randomMat = materials[math.random(0, materials.size() - 1)];
 				this.Part.Material = randomMat;

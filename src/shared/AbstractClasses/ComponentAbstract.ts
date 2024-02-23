@@ -10,6 +10,7 @@ abstract class AbstractComponent implements IComponent {
 		this.Disposed = false;
 	}
 	Dispose(): void {
+		this.Disposed = true;
 		for (const [_, thread] of this.Threads) {
 			if (coroutine.status(thread) !== "dead") {
 				coroutine.close(thread);

@@ -15,7 +15,7 @@ class RandomTransparency extends Component {
 	}
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Dispose) {
+			while (!this.Disposed) {
 				this.Part.Transparency = math.random();
 				task.wait(0.5);
 			}

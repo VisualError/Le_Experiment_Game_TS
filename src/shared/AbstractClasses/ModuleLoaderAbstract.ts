@@ -3,7 +3,7 @@ import { IModuleLoader } from "interfaces/IModuleLoader";
 import CacheHandler from "shared/Classes/CacheHandler";
 
 abstract class ModuleLoaderAbstract implements IModuleLoader {
-	constructor(public cacheHandler: CacheHandler<unknown>) {}
+	constructor(public cacheHandler: CacheHandler) {}
 	LoadClass<T>(ModuleScript: ModuleScript): T {
 		throw "Requires implementation";
 	}
@@ -17,6 +17,7 @@ abstract class ModuleLoaderAbstract implements IModuleLoader {
 				warn(`Failed to load ${ModuleScript.Name}: ${error}`);
 			}
 		}
+		print(this.cacheHandler);
 	}
 	GetModule<T>(name: string): T | undefined {
 		// Assuming CacheHandler has a method get(key: string) that retrieves a value by key
@@ -27,7 +28,7 @@ abstract class ModuleLoaderAbstract implements IModuleLoader {
 	}
 	Start(): void {
 		for (const [_, value] of this.cacheHandler.entries()) {
-			print(`Starting ${value}`);
+			print(`Starting: ${value}`);
 			try {
 				(value as IClass)?.Start();
 			} catch (e) {

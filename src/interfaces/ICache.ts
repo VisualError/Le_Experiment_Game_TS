@@ -5,13 +5,13 @@ import { IClass } from "./IClass";
  * A generic cache interface.
  * @template T - the type of data stored in the cache
  */
-export interface ICache<T> extends IClass {
+export interface ICache extends IClass {
 	/**
 	 * Sets a value in the cache.
 	 * @param key - the key to store the value under
 	 * @param value - the value to store
 	 */
-	set(key: unknown, value: T): void;
+	set(key: unknown, value: unknown): void;
 
 	/**
 	 * Gets a value from the cache.
@@ -25,7 +25,7 @@ export interface ICache<T> extends IClass {
 	 * @param key - the key of the value to check
 	 * @returns true if a value is present for the specified key, false otherwise
 	 */
-	has(key: unknown): boolean;
+	has(key: unknown): boolean | undefined;
 
 	/**
 	 * Deletes a value from the cache.

@@ -136,68 +136,6 @@ class ProceduralAnimator {
 			}
 			Leg.TouchedGround = raycastResult !== undefined;
 		}
-		// if (this.IsMoving || this.Humanoid?.FloorMaterial === Enum.Material.Air) {
-		// 	for (const [_, Leg] of pairs(this.Legs)) {
-		// 		const strideCF = this.DefaultStrideCF;
-		// 		const strideOffset = this.DefaultStrideOffset;
-		// 		const lookVector = this.lookVector;
-		// 		const angle = math.atan2(lookVector.X, lookVector.Z);
-		// 		const rad = math.deg(angle);
-		// 		const raycastParams = this.RaycastParams;
-
-		// 		Leg.CurrentCycle = (Leg.CurrentCycle + stepCycle) % 360;
-
-		// 		const cycle = Leg.CurrentCycle;
-		// 		const IKTolerance = 0;
-		// 		const hipPosition = Leg.HipAttachment.WorldPosition;
-		// 		const ground = Leg.FootAttachment.WorldPosition;
-
-		// 		const desiredPosition = new CFrame(ground, ground.add(this.MovementDirectionXZ))
-		// 			.mul(ANGLES(-cycle, 0, 0))
-		// 			.mul(strideCF).Position;
-		// 		const offset = desiredPosition.sub(hipPosition); // vector from hip to the circle
-		// 		const raycastResult =
-		// 			game.Workspace.Raycast(
-		// 				hipPosition,
-		// 				offset.Unit.mul(offset.Magnitude + strideOffset),
-		// 				raycastParams,
-		// 			) || undefined;
-		// 		const targetPos =
-		// 			(raycastResult && raycastResult.Position) ||
-		// 			hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
-		// 		const footPos = targetPos;
-		// 		Leg.CCDIKController.CCDIKIterateUntil(footPos, IKTolerance);
-
-		// 		if (!Leg.TouchedGround && raycastResult) {
-		// 			this.FootStep.Fire(raycastResult);
-		// 		}
-
-		// 		Leg.TouchedGround = raycastResult !== undefined;
-		// 	}
-		// } else {
-		// 	for (const [_, Leg] of pairs(this.Legs)) {
-		// 		const strideCF = this.DefaultStrideCF;
-		// 		const strideOffset = this.DefaultStrideOffset;
-		// 		const raycastParams = this.RaycastParams;
-		// 		const IKTolerance = 0;
-		// 		const hipPosition = Leg.HipAttachment.WorldPosition;
-		// 		const ground = Leg.FootAttachment.WorldPosition;
-		// 		const cycle = Leg.CurrentCycle;
-		// 		const desiredPosition = ground.add(DOWN);
-
-		// 		const offset = desiredPosition.sub(hipPosition); // vector from hip to the circle
-		// 		const raycastResult = game.Workspace.Raycast(
-		// 			hipPosition,
-		// 			offset.Unit.mul(offset.Magnitude + strideOffset),
-		// 			raycastParams,
-		// 		);
-		// 		const targetPosition =
-		// 			(raycastResult && raycastResult.Position) ||
-		// 			hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
-		// 		const footPos = ground.Lerp(targetPosition, 0.1);
-		// 		Leg.CCDIKController.CCDIKIterateOnce(footPos, IKTolerance);
-		// 	}
-		// }
 	}
 
 	MoveTorso(stepCycle: number, dt10: number, rootVelocity: Vector3) {

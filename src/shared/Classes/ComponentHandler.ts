@@ -2,12 +2,13 @@
 import ModuleLoaderAbstract from "shared/AbstractClasses/ModuleLoaderAbstract";
 import Component from "shared/Classes/Component";
 import CacheHandler from "./CacheHandler";
-import { IClass } from "interfaces/IClass";
 const CollectionService = game.GetService("CollectionService");
 
 class ComponentHandler extends ModuleLoaderAbstract {
 	Start(): void {
-		this.cacheHandler = new CacheHandler<Map<string, Component>>();
+		print("TEST");
+		this.cacheHandler = new CacheHandler();
+		this.cacheHandler.setCache(new Map<string, Component>());
 		super.Init(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
 	}
 	LoadClass<T>(ModuleScript: ModuleScript): T {

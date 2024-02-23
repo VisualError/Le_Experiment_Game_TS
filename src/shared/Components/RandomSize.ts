@@ -39,7 +39,7 @@ class RandomSize extends Component {
 
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Dispose) {
+			while (!this.Disposed) {
 				this.ChangeSize(math.random(100));
 				task.wait(1);
 			}
