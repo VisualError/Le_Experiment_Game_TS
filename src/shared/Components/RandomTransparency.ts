@@ -11,7 +11,7 @@ class RandomTransparency extends Component {
 	Part: Part;
 	Destroy(): void {
 		this.Part.Transparency = this.InitialTransparency;
-		super.Destroy();
+		super.Dispose();
 	}
 	Start(): void {
 		this.StartCoroutine(() => {

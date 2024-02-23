@@ -1,9 +1,11 @@
 import ICache from "interfaces/ICache";
+import Class from "shared/AbstractClasses/ClassAbstract";
 
-class CacheHandler<T> implements ICache<T> {
+class CacheHandler<T> extends Class implements ICache<T> {
 	private cache: Map<unknown, T>;
 
 	constructor() {
+		super();
 		this.cache = new Map<unknown, T>();
 		this.size = 0;
 	}
@@ -15,7 +17,6 @@ class CacheHandler<T> implements ICache<T> {
 	has(key: unknown): boolean {
 		return this.cache.has(key);
 	}
-	Start(): void {}
 	entries(): typeof this.cache {
 		return this.cache;
 	}

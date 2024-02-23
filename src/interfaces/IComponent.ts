@@ -1,10 +1,11 @@
 import { IClass } from "./IClass";
+import { IDisposable } from "./IDisposable";
 
 /**
  * An interface that represents a component in the game engine.
  * @interface
  */
-export interface IComponent extends IClass {
+export interface IComponent extends IClass, IDisposable {
 	/**
 	 * Starts a coroutine on the component.
 	 * @param {Callback} method - The method to be invoked on each frame of the coroutine.
@@ -16,9 +17,4 @@ export interface IComponent extends IClass {
 	 * Stops the currently running coroutine on the component.
 	 */
 	StopCoroutine(): void;
-
-	/**
-	 * Destroys the component.
-	 */
-	Destroy(): void;
 }

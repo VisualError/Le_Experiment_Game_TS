@@ -35,7 +35,7 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		const ComponentRemoved = (instance: Instance): void => {
 			const CachedInstance = this.cacheHandler.get(instance) as Map<string, Component>;
 			if (CachedInstance) {
-				CachedInstance.get(componentTag)?.Destroy();
+				CachedInstance.get(componentTag)?.Dispose();
 				CachedInstance.delete(componentTag);
 				if (CachedInstance.size() === 0) {
 					this.cacheHandler.delete(instance);

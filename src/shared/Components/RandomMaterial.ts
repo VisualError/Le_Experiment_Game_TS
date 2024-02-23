@@ -11,7 +11,7 @@ class RandomMaterial extends Component {
 	Part: Part;
 	Destroy(): void {
 		this.Part.Material = this.InitialMaterial;
-		super.Destroy();
+		super.Dispose();
 	}
 	Start(): void {
 		this.StartCoroutine(() => {

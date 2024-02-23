@@ -2,9 +2,8 @@ import { IClass } from "interfaces/IClass";
 
 abstract class Class implements IClass {
 	Start(): void {
-		throw "Method not implemented.";
+		warn(`Start not implemented for ${tostring(this)}`);
 	}
-	Dispose: boolean = false;
 }
 
 export = Class;

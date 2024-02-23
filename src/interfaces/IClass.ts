@@ -7,5 +7,4 @@ export interface IClass {
 	 * @method Start
 	 */
 	Start(): void;
-	Dispose?: boolean;
 }

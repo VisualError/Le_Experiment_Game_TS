@@ -24,7 +24,7 @@ class RandomSize extends Component {
 			this.CurrentTween = undefined;
 			this.TweenInfo = undefined;
 		});
-		super.Destroy();
+		super.Dispose();
 	}
 	CurrentTween?: Tween;
 	ChangeSize(number: number): void {
