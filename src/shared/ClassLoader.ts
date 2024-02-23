@@ -9,11 +9,11 @@ class ClassLoader extends ModuleLoaderAbstract {
 		const mod = require(ModuleScript) as { new (): T };
 		const loaded = new mod();
 		print(mod, loaded);
-		this.cacheHandler.set(ModuleScript.Name, mod);
+		this.cache.set(ModuleScript.Name, loaded as ModuleScript);
 		return loaded;
 	}
 	Start(): void {
-		print(`[Main Module Loader]: Starting ${this.cacheHandler.size} modules..`);
+		print(`[Main Module Loader]: Starting ${this.cache.size()} modules..`);
 		super.Start();
 	}
 }

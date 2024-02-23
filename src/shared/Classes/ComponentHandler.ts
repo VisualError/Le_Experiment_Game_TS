@@ -1,13 +1,11 @@
 /* eslint-disable no-inner-declarations */
 import ModuleLoaderAbstract from "shared/AbstractClasses/ModuleLoaderAbstract";
 import Component from "shared/Classes/Component";
-import CacheHandler from "./CacheHandler";
 const CollectionService = game.GetService("CollectionService");
 
 class ComponentHandler extends ModuleLoaderAbstract {
+	cache = new Map<Instance, Map<string, Component>>();
 	Start(): void {
-		this.cacheHandler = new CacheHandler();
-		this.cacheHandler.setCache(new Map<string, Component>());
 		super.Init<Component>(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
 	}
 	LoadModule<T>(ModuleScript: ModuleScript): T {
@@ -22,23 +20,23 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		const ComponentAdded = (instance: Instance): void => {
 			const component = new ComponentModule(instance);
 			const map = new Map<string, Component>();
-			if (!this.cacheHandler.has(instance)) {
-				this.cacheHandler.set(instance, map);
+			if (!this.cache.has(instance)) {
+				this.cache.set(instance, map);
 			}
-			(this.cacheHandler.get(instance) as Map<string, Component>)?.set(componentTag, component);
-			print(this.cacheHandler);
+			this.cache.get(instance)?.set(componentTag, component);
+			print(this.cache);
 		};
 		/**
 		 * Removes a component from the given instance.
 		 * @param instance the instance to remove the component from
 		 */
 		const ComponentRemoved = (instance: Instance): void => {
-			const CachedInstance = this.cacheHandler.get(instance) as Map<string, Component>;
+			const CachedInstance = this.cache.get(instance);
 			if (CachedInstance) {
 				CachedInstance.get(componentTag)?.Dispose();
 				CachedInstance.delete(componentTag);
 				if (CachedInstance.size() === 0) {
-					this.cacheHandler.delete(instance);
+					this.cache.delete(instance);
 				}
 			}
 		};
