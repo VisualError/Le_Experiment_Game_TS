@@ -9,7 +9,7 @@ class RandomMaterial extends Component {
 	}
 	InitialMaterial: Enum.Material;
 	Part: Part;
-	Destroy(): void {
+	Dispose(): void {
 		this.Part.Material = this.InitialMaterial;
 		super.Dispose();
 	}

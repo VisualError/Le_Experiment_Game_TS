@@ -15,7 +15,7 @@ class RandomColor extends Component {
 	}
 	InitialColor: BrickColor;
 	Part: Part;
-	Destroy(): void {
+	Dispose(): void {
 		this.Part.BrickColor = this.InitialColor;
 		super.Dispose();
 	}

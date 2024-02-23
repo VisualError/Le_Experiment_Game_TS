@@ -12,7 +12,7 @@ class RandomSize extends Component {
 	InitialSize: Vector3;
 	Part: Part;
 	TweenInfo?: TweenInfo;
-	Destroy(): void {
+	Dispose(): void {
 		this.CurrentTween?.Cancel();
 		this.CurrentTween = TweenService.Create(
 			this.Part,

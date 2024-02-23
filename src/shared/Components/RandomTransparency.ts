@@ -9,7 +9,7 @@ class RandomTransparency extends Component {
 	}
 	InitialTransparency: number;
 	Part: Part;
-	Destroy(): void {
+	Dispose(): void {
 		this.Part.Transparency = this.InitialTransparency;
 		super.Dispose();
 	}
