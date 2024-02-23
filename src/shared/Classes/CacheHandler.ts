@@ -1,6 +1,7 @@
 import ICache from "interfaces/ICache";
 import Class from "shared/AbstractClasses/ClassAbstract";
 
+// TODO: Don't do this. Change this to something else.
 class CacheHandler extends Class implements ICache {
 	private cache: Map<unknown, unknown>;
 

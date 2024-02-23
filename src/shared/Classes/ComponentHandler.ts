@@ -6,15 +6,14 @@ const CollectionService = game.GetService("CollectionService");
 
 class ComponentHandler extends ModuleLoaderAbstract {
 	Start(): void {
-		print("TEST");
 		this.cacheHandler = new CacheHandler();
 		this.cacheHandler.setCache(new Map<string, Component>());
-		super.Init(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
+		super.Init<Component>(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
 	}
-	LoadClass<T>(ModuleScript: ModuleScript): T {
+	LoadModule<T>(ModuleScript: ModuleScript): T {
 		print(`Loading ${ModuleScript.Name} Component`);
 		const componentTag = getTag(ModuleScript);
-		const ComponentModule = getComponentType(ModuleScript);
+		const ComponentModule = this.GetModuleAsType<Component>(ModuleScript);
 
 		/**
 		 * Adds a component to the given instance.
@@ -58,14 +57,6 @@ class ComponentHandler extends ModuleLoaderAbstract {
  */
 function getTag(module: ModuleScript) {
 	return module.Name;
-}
-
-/**
- * Gets the component type for the given ModuleScript.
- * @param module the ModuleScript to get the component type for
- */
-function getComponentType(module: ModuleScript): typeof Component {
-	return require(module) as typeof Component;
 }
 
 export = ComponentHandler;

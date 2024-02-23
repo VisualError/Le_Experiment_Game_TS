@@ -5,7 +5,6 @@ class Circle extends Class {
 	constructor(radius: number = 1, additionalProps?: InstanceProperties["Part"]) {
 		super();
 		this.circle = createSphere(radius, additionalProps);
-		print(this.circle);
 	}
 	Start(): void {
 		const circle = new Circle(5, {

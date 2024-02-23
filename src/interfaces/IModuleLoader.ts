@@ -14,7 +14,7 @@ export interface IModuleLoader extends IClass {
 	 */
 	Init(scripts: ModuleScript[]): void;
 
-	LoadClass<T>(script: ModuleScript): T;
+	LoadModule<T>(script: ModuleScript): T;
 
-	LoadClasses(scripts: ModuleScript[]): void;
+	LoadModules(scripts: ModuleScript[]): void;
 }
