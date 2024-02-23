@@ -28,7 +28,7 @@ class ProceduralAnimator {
 	DefaultStrideCF: CFrame;
 	MovementDirectionXZ: Vector3;
 	rootvelm: number;
-	FootStep: Signal<RaycastResult>;
+	FootStep: Signal<RaycastResult | undefined>;
 	MaxSpeed: number;
 	EngineSound: Sound | undefined;
 	WalkBounce: number;
@@ -123,17 +123,17 @@ class ProceduralAnimator {
 				.mul(ANGLES(-cycle, 0, 0))
 				.mul(strideCF).Position;
 			const offset = desiredPosition.sub(hipPosition); // vector from hip to the circle
-			const raycastResult =
-				game.Workspace.Raycast(hipPosition, offset.Unit.mul(offset.Magnitude + strideOffset), raycastParams) ||
-				undefined;
+			const raycastResult = game.Workspace.Raycast(
+				hipPosition,
+				offset.Unit.mul(offset.Magnitude + strideOffset),
+				raycastParams,
+			);
 			const targetPos = hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
 			const footPos = targetPos;
 			Leg.CCDIKController.CCDIKIterateUntil(footPos, IKTolerance);
-
 			if (!Leg.TouchedGround && raycastResult) {
 				this.FootStep.Fire(raycastResult);
 			}
-
 			Leg.TouchedGround = raycastResult !== undefined;
 		}
 		// if (this.IsMoving || this.Humanoid?.FloorMaterial === Enum.Material.Air) {
@@ -225,8 +225,8 @@ class ProceduralAnimator {
 	}
 
 	ConnectFootStepSound(sound: Sound): void {
-		this.FootStep.Connect((raycastResult: RaycastResult) => {
-			print("stomp");
+		this.FootStep.Connect((raycastResult: RaycastResult | undefined) => {
+			if (raycastResult === undefined) return;
 			const soundPositionAttachment = CreateInstance("Attachment", {
 				WorldPosition: raycastResult.Position,
 				Parent: game.Workspace.Terrain,
