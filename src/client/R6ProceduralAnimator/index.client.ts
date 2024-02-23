@@ -1,5 +1,8 @@
-import CCDIKController from "./CCDIKController";
+//import CCDIKController from "./CCDIKController";
+
+import CCDIKController, { ConstraintsValue } from "@rbxts/ccdik-controller";
 import ProceduralAnimator from "./ProceduralAnimator";
+import { R6Legs } from "./FakeLegs";
 
 const PlayerService = game.GetService("Players");
 const LocalPlayer = PlayerService.LocalPlayer;
@@ -18,10 +21,11 @@ function createFakeLegs(
 	FakeUpperLLeg.CanCollide = false;
 	FakeUpperLLeg.CanQuery = false;
 	FakeUpperLLeg.CanTouch = false;
+
 	const LeftHip = new Instance("Motor6D");
 	LeftHip.Name = "Fake Left Hip";
 	LeftHip.C1 = new CFrame(0, 0.3, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1);
-	LeftHip.C0 = new CFrame(0, -0.95, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1);
+	LeftHip.C0 = new CFrame(-0.5, -0.95, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1);
 	LeftHip.Part0 = Torso;
 	LeftHip.Part1 = FakeUpperLLeg;
 
@@ -78,6 +82,9 @@ function giveCharacterIK(character: Model) {
 	EndEffector.Name = "EndEffector";
 	EndEffector.Position = new Vector3(0, -0.9, 0);
 	EndEffector.Parent = RealRightLeg;
+
+	const cloneEndEffect = EndEffector.Clone();
+	cloneEndEffect.Parent = RealLeftLeg;
 
 	const [LeftLegData, RightLegData, FakeUpperLLeg, FakeUpperRLeg] = createFakeLegs(
 		character,
@@ -161,14 +168,12 @@ function giveCharacterIK(character: Model) {
 	LHip.Enabled = false;
 
 	const rightLegController = new CCDIKController(RightLegData);
-	rightLegController.UseLastMotor = true;
 	rightLegController.GetConstraints();
-	//rightLegController.GetConstraintsFromMotor(RightLegData[1], "RightBallSocketConstraint");
+	rightLegController.GetConstraintsFromMotor(RightLegData[0], "RightBallSocketConstraint");
 
 	const leftLegController = new CCDIKController(LeftLegData);
-	leftLegController.UseLastMotor = true;
 	leftLegController.GetConstraints();
-	//leftLegController.GetConstraintsFromMotor(LeftLegData[1], "LeftBallSocketConstraint");
+	leftLegController.GetConstraintsFromMotor(LeftLegData[0], "LeftBallSocketConstraint");
 
 	const leftStepAttach = new Instance("Attachment");
 	leftStepAttach.Name = "LeftStepAttach";
@@ -189,4 +194,60 @@ function giveCharacterIK(character: Model) {
 	leftHipAttach.Name = "LeftHipAttach";
 	leftHipAttach.Position = new Vector3(-0.5, -0.9, 0);
 	leftHipAttach.Parent = Torso;
+
+	const r6Legs = new R6Legs(
+		rightLegController,
+		leftLegController,
+		rightHipAttach,
+		leftHipAttach,
+		rightStepAttach,
+		leftStepAttach,
+	);
+
+	const params = new RaycastParams();
+	params.FilterDescendantsInstances = [character];
+	const humanoidRootPart = character.WaitForChild("HumanoidRootPart") as Part;
+	const rootMotor = humanoidRootPart.WaitForChild("RootJoint") as Motor6D;
+	const animator = new ProceduralAnimator(humanoidRootPart, r6Legs, rootMotor, params);
+
+	const runSound = humanoidRootPart.WaitForChild("Running") as Sound;
+	runSound.Volume = 0;
+	const objectValue = script.FindFirstChild("FootStepSound") as ObjectValue;
+	if (objectValue && objectValue.Value) {
+		animator.ConnectFootStepSound(objectValue.Value as Sound);
+	}
+	// Begin Animation.
+	const animationConnection = RunService.Heartbeat.Connect(function (dt) {
+		animator.Animate(dt);
+	});
+
+	//cleanup when died functions, or root part is destroyed
+	const humanoid = character.WaitForChild("Humanoid") as Humanoid;
+	humanoid.Died.Connect(function () {
+		if (animationConnection) {
+			animationConnection.Disconnect();
+		}
+	});
+	humanoid.StateChanged.Connect(function () {
+		if (character) {
+			const state =
+				humanoid.GetState() === Enum.HumanoidStateType.Seated ||
+				humanoid.GetState() === Enum.HumanoidStateType.PlatformStanding;
+			RHip.Enabled = state;
+			LHip.Enabled = state;
+		}
+	});
+}
+
+function givePlayerIK(player: Player) {
+	player.CharacterAdded.Connect(giveCharacterIK);
+	if (player.Character) {
+		giveCharacterIK(player.Character);
+	}
+}
+
+PlayerService.PlayerAdded.Connect(givePlayerIK);
+
+for (const player of PlayerService.GetPlayers()) {
+	givePlayerIK(player);
 }

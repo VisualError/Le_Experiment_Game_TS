@@ -23,5 +23,9 @@
     "prettier": "^3.2.5",
     "roblox-ts": "^2.3.0",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@rbxts/beacon": "^2.1.1",
+    "@rbxts/ccdik-controller": "^1.0.1-ts3"
   }
 }

@@ -28,7 +28,6 @@ class RandomSize extends Component {
 	}
 	CurrentTween?: Tween;
 	ChangeSize(number: number): void {
-		print("changing size");
 		this.CurrentTween?.Cancel();
 		this.CurrentTween = TweenService.Create(
 			this.Part,

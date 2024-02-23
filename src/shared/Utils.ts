@@ -4,9 +4,6 @@ export function CreateInstance<T extends keyof CreatableInstances>(
 ): CreatableInstances[T] {
 	const newInstance = new Instance(className);
 	Assign(newInstance, props);
-	newInstance.Destroying.Connect(() => {
-		print("destroye");
-	});
 	return newInstance as CreatableInstances[T];
 }
 export function Assign<T extends Instance>(instance: T, props: Partial<T>): T {
