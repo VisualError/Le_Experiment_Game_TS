@@ -1,7 +1,8 @@
 import Class from "shared/AbstractClasses/ClassAbstract";
-import { createSphere, Types, getFiltered } from "shared/Shapes";
+import { createSphere } from "shared/Shapes";
+import { InstanceProperties } from "shared/Utils";
 class Circle extends Class {
-	constructor(radius: number = 1, additionalProps?: Partial<WritableInstanceProperties<CreatableInstances["Part"]>>) {
+	constructor(radius: number = 1, additionalProps?: InstanceProperties["Part"]) {
 		super();
 		this.circle = createSphere(radius, additionalProps);
 		print(this.circle);

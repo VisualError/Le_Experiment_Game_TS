@@ -1,6 +1,6 @@
 import ModuleLoaderAbstract from "./AbstractClasses/ModuleLoaderAbstract";
 
-class ModuleLoader extends ModuleLoaderAbstract {
+class ClassLoader extends ModuleLoaderAbstract {
 	Init(scripts: ModuleScript[]): void {
 		print(`[Main Module Loader]: Found ${scripts.size()} Files..`);
 		super.Init(scripts);
@@ -16,4 +16,4 @@ class ModuleLoader extends ModuleLoaderAbstract {
 	}
 }
 
-export = ModuleLoader;
+export = ClassLoader;

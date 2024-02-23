@@ -51,7 +51,6 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		return ComponentModule as T;
 	}
 }
-// TODO: DO something different probably?
 
 /**
  * Gets the tag for the given ModuleScript.

@@ -12,3 +12,6 @@ export function Assign<T extends Instance>(instance: T, props: Partial<T>): T {
 	}
 	return instance as T;
 }
+export type InstanceProperties = {
+	[K in keyof CreatableInstances]: Partial<WritableInstanceProperties<CreatableInstances[K]>>;
+};
