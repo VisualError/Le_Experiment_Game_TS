@@ -13,8 +13,13 @@ class RandomTransparency extends Component {
 		this.Part.Transparency = this.InitialTransparency;
 		super.Dispose();
 	}
-	Update(): void {
-		this.Part.Transparency = math.random();
+	lastFrame = 0;
+	Update(deltaTime: number): void {
+		this.lastFrame += deltaTime;
+		if (this.lastFrame >= 10) {
+			this.Part.Transparency = math.random();
+			this.lastFrame = 0;
+		}
 	}
 }
 

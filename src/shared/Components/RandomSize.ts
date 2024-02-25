@@ -27,21 +27,33 @@ class RandomSize extends Component {
 		super.Dispose();
 	}
 	CurrentTween?: Tween;
+	newTweenInfo = new TweenInfo(
+		1, // Duration of the tween
+		Enum.EasingStyle.Linear, // Easing style
+		Enum.EasingDirection.InOut, // Easing direction
+		0, // Number of times to repeat
+		false, // Should the tween repeat?
+		1, // Delay time
+	);
 	ChangeSize(number: number): void {
 		this.CurrentTween?.Cancel();
 		this.CurrentTween = TweenService.Create(
 			this.Part,
-			new TweenInfo(),
-			getFiltered(Types.getSphere(number, { Anchored: false })),
+			this.newTweenInfo,
+			getFiltered(
+				Types.getSphere(number, {
+					Anchored: false,
+				}),
+			),
 		);
 		this.CurrentTween.Play();
 	}
 
 	lastFrame = 0;
-	Update(deltaTime: number): void {
+	FixedUpdate(deltaTime: number): void {
 		this.lastFrame += deltaTime;
-		if (this.lastFrame >= 2) {
-			this.ChangeSize(math.random(5));
+		if (this.lastFrame >= 10) {
+			this.ChangeSize(math.random(20));
 			this.lastFrame = 0;
 		}
 	}

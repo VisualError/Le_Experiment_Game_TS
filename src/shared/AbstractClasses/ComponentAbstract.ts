@@ -35,7 +35,6 @@ abstract class AbstractComponent implements IComponent {
 			}
 		}
 	}
-	static Disposed: boolean;
 	StartCoroutine(method: Callback): void {
 		const newThread = coroutine.create(method);
 		this.Threads.set(`${tostring(this.Instance)}${tostring(method)}`, newThread);

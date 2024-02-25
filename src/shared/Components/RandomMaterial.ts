@@ -1,5 +1,4 @@
 import Component from "shared/AbstractClasses/ComponentAbstract";
-import RandomColor from "./RandomColor";
 
 class RandomMaterial extends Component {
 	constructor(part: Part) {
@@ -14,10 +13,15 @@ class RandomMaterial extends Component {
 		this.Part.Material = this.InitialMaterial;
 		super.Dispose();
 	}
-	Update(): void {
-		const materials = Enum.Material.GetEnumItems();
-		const randomMat = materials[math.random(0, materials.size() - 1)];
-		this.Part.Material = randomMat;
+	static materials = Enum.Material.GetEnumItems();
+	lastFrame = 0;
+	Update(deltaTime: number): void {
+		this.lastFrame += deltaTime;
+		if (this.lastFrame >= 10) {
+			const randomMat = RandomMaterial.materials[math.random(0, RandomMaterial.materials.size() - 1)];
+			this.Part.Material = randomMat;
+			this.lastFrame = 0;
+		}
 	}
 }
 

@@ -1,5 +1,4 @@
 import Component from "shared/AbstractClasses/ComponentAbstract";
-import RunserviceHandler from "shared/Classes/RunserviceHandler";
 /**
  * A component that changes the color of a part at random intervals.
  */
@@ -24,7 +23,7 @@ class RandomColor extends Component {
 	lastFrame = 0;
 	Update(deltaTime: number): void {
 		this.lastFrame += deltaTime;
-		if (this.lastFrame >= 0.5) {
+		if (this.lastFrame >= 10) {
 			this.lastFrame = 0;
 			this.Part!.BrickColor = BrickColor.random();
 		}
