@@ -35,15 +35,12 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		const ComponentRemoved = (instance: Instance): void => {
 			const CachedInstance = this.cache.get(instance);
 			if (CachedInstance) {
-				print("Found");
-				print(CachedInstance[componentTag]);
 				CachedInstance[componentTag]?.Dispose();
 				CachedInstance[componentTag] = undefined;
 				if (Object.isEmpty(CachedInstance)) {
 					this.cache.delete(instance);
 				}
 			}
-			print(this.cache);
 		};
 		for (const existing of CollectionService.GetTagged(componentTag)) {
 			ComponentAdded(existing);

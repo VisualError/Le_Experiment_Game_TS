@@ -21,8 +21,13 @@ class RandomColor extends Component {
 		super.Dispose();
 	}
 
-	Update(): void {
-		this.Part!.BrickColor = BrickColor.random();
+	lastFrame = 0;
+	Update(deltaTime: number): void {
+		this.lastFrame += deltaTime;
+		if (this.lastFrame >= 0.5) {
+			this.lastFrame = 0;
+			this.Part!.BrickColor = BrickColor.random();
+		}
 	}
 }
 
