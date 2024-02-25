@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@rbxts/beacon": "^2.1.1",
-    "@rbxts/ccdik-controller": "^1.0.1-ts3"
+    "@rbxts/ccdik-controller": "^1.0.1-ts3",
+    "@rbxts/object-utils": "^1.0.4"
   }
 }

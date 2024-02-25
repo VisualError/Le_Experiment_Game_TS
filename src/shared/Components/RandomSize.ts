@@ -3,7 +3,7 @@ import { Types, getFiltered } from "shared/Shapes";
 const TweenService = game.GetService("TweenService");
 class RandomSize extends Component {
 	constructor(part: Part) {
-		super(part as Instance);
+		super(part);
 		this.InitialSize = part.Size;
 		this.Part = part;
 		this.Start();
@@ -39,11 +39,11 @@ class RandomSize extends Component {
 
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Disposed) {
+			while (!RandomSize.Disposed) {
 				this.ChangeSize(math.random(100));
 				task.wait(1);
 			}
-		}, "RandomSize");
+		});
 	}
 }
 export = RandomSize;

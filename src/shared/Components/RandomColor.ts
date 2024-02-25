@@ -8,7 +8,7 @@ class RandomColor extends Component {
 	 * @param part The part to change the color of.
 	 */
 	constructor(part: Part) {
-		super(part as Instance);
+		super(part);
 		this.InitialColor = part.BrickColor;
 		this.Part = part;
 		this.Start();
@@ -16,16 +16,17 @@ class RandomColor extends Component {
 	InitialColor: BrickColor;
 	Part: Part;
 	Dispose(): void {
+		print("dispos");
 		this.Part.BrickColor = this.InitialColor;
 		super.Dispose();
 	}
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Disposed) {
-				this.Part.BrickColor = BrickColor.random();
+			while (!RandomColor.Disposed) {
+				this.Part!.BrickColor = BrickColor.random();
 				task.wait(0.5);
 			}
-		}, "RandomColor");
+		});
 	}
 }
 

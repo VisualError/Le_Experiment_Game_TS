@@ -1,8 +1,9 @@
 import Component from "shared/AbstractClasses/ComponentAbstract";
+import RandomColor from "./RandomColor";
 
 class RandomMaterial extends Component {
 	constructor(part: Part) {
-		super(part as Instance);
+		super(part);
 		this.InitialMaterial = part.Material;
 		this.Part = part;
 		this.Start();
@@ -15,13 +16,13 @@ class RandomMaterial extends Component {
 	}
 	Start(): void {
 		this.StartCoroutine(() => {
-			while (!this.Disposed) {
+			while (!RandomColor.Disposed) {
 				const materials = Enum.Material.GetEnumItems();
 				const randomMat = materials[math.random(0, materials.size() - 1)];
 				this.Part.Material = randomMat;
 				task.wait(0.5);
 			}
-		}, "RandomMaterial");
+		});
 	}
 }
 

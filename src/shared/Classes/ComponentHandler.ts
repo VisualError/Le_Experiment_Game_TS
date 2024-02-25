@@ -1,10 +1,10 @@
-/* eslint-disable no-inner-declarations */
 import ModuleLoaderAbstract from "shared/AbstractClasses/ModuleLoaderAbstract";
 import Component from "shared/Classes/Component";
 const CollectionService = game.GetService("CollectionService");
+import Object from "@rbxts/object-utils";
 
 class ComponentHandler extends ModuleLoaderAbstract {
-	cache = new Map<Instance, Map<string, Component>>();
+	cache = new Map<Instance, { [key: string]: Component | undefined }>();
 	Start(): void {
 		super.Init<Component>(script.Parent?.Parent?.FindFirstChild("Components")?.GetChildren() as ModuleScript[]);
 	}
@@ -19,12 +19,12 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		 */
 		const ComponentAdded = (instance: Instance): void => {
 			const component = new ComponentModule(instance);
-			const map = new Map<string, Component>();
 			if (!this.cache.has(instance)) {
-				this.cache.set(instance, map);
+				this.cache.set(instance, { [componentTag]: component });
+			} else {
+				const instanceComponents = this.cache.get(instance)!;
+				instanceComponents[componentTag] = component;
 			}
-			this.cache.get(instance)?.set(componentTag, component);
-			print(this.cache);
 		};
 		/**
 		 * Removes a component from the given instance.
@@ -33,12 +33,15 @@ class ComponentHandler extends ModuleLoaderAbstract {
 		const ComponentRemoved = (instance: Instance): void => {
 			const CachedInstance = this.cache.get(instance);
 			if (CachedInstance) {
-				CachedInstance.get(componentTag)?.Dispose();
-				CachedInstance.delete(componentTag);
-				if (CachedInstance.size() === 0) {
+				print("Found");
+				print(CachedInstance[componentTag]);
+				CachedInstance[componentTag]?.Dispose();
+				CachedInstance[componentTag] = undefined;
+				if (Object.isEmpty(CachedInstance)) {
 					this.cache.delete(instance);
 				}
 			}
+			print(this.cache);
 		};
 		for (const existing of CollectionService.GetTagged(componentTag)) {
 			ComponentAdded(existing);

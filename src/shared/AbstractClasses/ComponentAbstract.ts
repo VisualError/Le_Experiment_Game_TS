@@ -6,10 +6,16 @@ import { IComponent } from "interfaces/IComponent";
 abstract class AbstractComponent implements IComponent {
 	constructor(Instance: Instance) {
 		this.Instance = Instance;
-		this.Threads = new Map<string, thread>();
 		this.Disposed = false;
+		this.Threads = new Map<string, thread>();
 	}
+	Instance: Instance;
+	Disposed: boolean;
 	Dispose(): void {
+		if (this.Disposed) {
+			warn(`[${tostring(this)}] Can't disposed an already disposed object!`);
+			return;
+		}
 		this.Disposed = true;
 		for (const [_, thread] of this.Threads) {
 			if (coroutine.status(thread) !== "dead") {
@@ -18,15 +24,15 @@ abstract class AbstractComponent implements IComponent {
 			}
 		}
 	}
-	Disposed: boolean;
-	StartCoroutine(method: Callback, identifier: string): void {
+	static Disposed: boolean;
+	StartCoroutine(method: Callback): void {
 		const newThread = coroutine.create(method);
-		this.Threads.set(identifier, newThread);
+		this.Threads.set(`${tostring(this.Instance)}${tostring(method)}`, newThread);
 		coroutine.resume(newThread);
 	}
 	StopCoroutine(): void {}
 	Start(): void {}
-	Instance: Instance;
+	//Instance: Instance;
 	Threads: Map<string, thread>;
 }
 

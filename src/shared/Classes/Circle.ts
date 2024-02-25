@@ -12,7 +12,7 @@ class Circle extends Class {
 			Anchored: false,
 			Position: new Vector3(0, 10, 0),
 		});
-		circle.circle.AddTag("RandomSize");
+		circle.circle.AddTag("RandomColor");
 	}
 	circle: Part;
 }
