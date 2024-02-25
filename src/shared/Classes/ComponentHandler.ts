@@ -2,6 +2,8 @@ import ModuleLoaderAbstract from "shared/AbstractClasses/ModuleLoaderAbstract";
 import Component from "shared/Classes/Component";
 const CollectionService = game.GetService("CollectionService");
 import Object from "@rbxts/object-utils";
+import { IComponent } from "interfaces/IComponent";
+import RunserviceHandler from "./RunserviceHandler";
 
 class ComponentHandler extends ModuleLoaderAbstract {
 	cache = new Map<Instance, { [key: string]: Component | undefined }>();

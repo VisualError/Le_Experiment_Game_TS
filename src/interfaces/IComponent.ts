@@ -17,4 +17,8 @@ export interface IComponent extends IClass, IDisposable {
 	 * Stops the currently running coroutine on the component.
 	 */
 	StopCoroutine(): void;
+
+	Update?(deltaTime: number): void;
+	FixedUpdate?(deltaTime: number): void;
+	LateUpdate?(deltaTime: number): void;
 }

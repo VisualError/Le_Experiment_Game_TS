@@ -37,13 +37,8 @@ class RandomSize extends Component {
 		this.CurrentTween.Play();
 	}
 
-	Start(): void {
-		this.StartCoroutine(() => {
-			while (!RandomSize.Disposed) {
-				this.ChangeSize(math.random(100));
-				task.wait(1);
-			}
-		});
+	FixedUpdate() {
+		this.ChangeSize(math.random(100));
 	}
 }
 export = RandomSize;

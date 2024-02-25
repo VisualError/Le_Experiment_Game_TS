@@ -30,11 +30,11 @@ abstract class ModuleLoaderAbstract implements IModuleLoader {
 	}
 	Start(): void {
 		for (const [index, value] of this.cache) {
-			print(`Starting: ${index} (${value})`);
+			print("Starting", index, value);
 			try {
 				(value as IClass)?.Start();
 			} catch (e) {
-				warn(`Failed to start ${index} (${value}): ${e}`);
+				warn(`Failed to start`, index, value, e);
 			}
 		}
 	}

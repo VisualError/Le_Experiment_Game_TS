@@ -1,4 +1,5 @@
 import Component from "shared/AbstractClasses/ComponentAbstract";
+import RunserviceHandler from "shared/Classes/RunserviceHandler";
 /**
  * A component that changes the color of a part at random intervals.
  */
@@ -16,17 +17,12 @@ class RandomColor extends Component {
 	InitialColor: BrickColor;
 	Part: Part;
 	Dispose(): void {
-		print("dispos");
 		this.Part.BrickColor = this.InitialColor;
 		super.Dispose();
 	}
-	Start(): void {
-		this.StartCoroutine(() => {
-			while (!RandomColor.Disposed) {
-				this.Part!.BrickColor = BrickColor.random();
-				task.wait(0.5);
-			}
-		});
+
+	Update(): void {
+		this.Part!.BrickColor = BrickColor.random();
 	}
 }
 
