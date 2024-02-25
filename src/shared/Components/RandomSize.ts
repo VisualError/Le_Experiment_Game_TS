@@ -37,8 +37,13 @@ class RandomSize extends Component {
 		this.CurrentTween.Play();
 	}
 
-	FixedUpdate() {
-		this.ChangeSize(math.random(100));
+	lastFrame = 0;
+	Update(deltaTime: number): void {
+		this.lastFrame += deltaTime;
+		if (this.lastFrame >= 2) {
+			this.ChangeSize(math.random(5));
+			this.lastFrame = 0;
+		}
 	}
 }
 export = RandomSize;

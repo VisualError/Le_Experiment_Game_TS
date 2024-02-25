@@ -27,7 +27,6 @@ class RunserviceHandler extends Class implements IDisposable {
 		updateType: "Update" | "FixedUpdate" | "LateUpdate",
 		Instance: Component,
 	): void {
-		print("New connection!", Instance);
 		switch (updateType) {
 			case "Update":
 				this.UpdateCache.push(Instance);
