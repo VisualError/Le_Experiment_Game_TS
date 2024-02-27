@@ -11,7 +11,10 @@
 		"le_experiment_game_ts:out/interfaces/OnDestroy@OnDestroy": "interfaces/OnDestroy@OnDestroy",
 		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnDestroy": "interfaces/CustomInterfaces@OnDestroy",
 		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomColor": "shared/components/RandomTransparency@RandomColor",
-		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "shared/components/RandomTransparency@RandomTransparency"
+		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "shared/components/RandomTransparency@RandomTransparency",
+		"le_experiment_game_ts:out/shared/components/RandomSize@RandomColor": "shared/components/RandomSize@RandomColor",
+		"le_experiment_game_ts:out/server/services/TestService@MyService": "server/services/TestService@MyService",
+		"le_experiment_game_ts:out/server/services/TestService@OnPlayerJoined": "server/services/TestService@OnPlayerJoined"
 	},
 	"metadata": {}
 }

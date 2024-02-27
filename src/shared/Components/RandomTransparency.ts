@@ -1,20 +1,32 @@
 import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
 import { OnDestroy } from "interfaces/CustomInterfaces";
+import { Assign } from "shared/Utils";
 import { GameObject } from "shared/abstract/GameObject";
 @Component({
 	tag: "random.transparency",
 })
-export class RandomTransparency extends GameObject<{}, Part> implements OnTick, OnStart {
+export class RandomTransparency extends GameObject<{}, Part> implements OnTick, OnStart, OnDestroy {
 	constructor() {
 		super();
 		this.InitialTransparency = this.instance.Transparency;
 	}
-	InitialTransparency: number;
 	onStart(): void {
 		print("start!!!!");
+		this.StartCoroutine(() => {
+			while (true) {
+				print("Wah");
+				task.wait(1);
+			}
+		});
 	}
-	protected OnRemoved(): void {
+	onDestroy(): void {
+		Assign(this.instance.Clone(), {
+			Size: this.instance.Size.add(this.instance.Size),
+			Parent: game.Workspace,
+		});
+	}
+	protected onRemove(): void {
 		this.instance.Transparency = this.InitialTransparency;
 	}
 	private lastFrame = 0;
@@ -24,4 +36,6 @@ export class RandomTransparency extends GameObject<{}, Part> implements OnTick, 
 		this.instance.Transparency = math.random();
 		this.lastFrame = 0;
 	}
+
+	InitialTransparency: number;
 }
