@@ -1,6 +1,5 @@
 import { Flamework } from "@flamework/core";
 import { CreateInstance } from "shared/Utils";
-import { MyService } from "./services/TestService";
 
 Flamework.addPaths("src/shared/components");
 Flamework.addPaths("src/server/services");
@@ -19,6 +18,5 @@ for (let i = 0; i < 10; i++) {
 		CanQuery: false,
 		CastShadow: false,
 	});
-	sphere.AddTag("random.size");
 	sphere.AddTag("random.color");
 }

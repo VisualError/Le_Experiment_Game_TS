@@ -14,7 +14,15 @@
 		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "shared/components/RandomTransparency@RandomTransparency",
 		"le_experiment_game_ts:out/shared/components/RandomSize@RandomColor": "shared/components/RandomSize@RandomColor",
 		"le_experiment_game_ts:out/server/services/TestService@MyService": "server/services/TestService@MyService",
-		"le_experiment_game_ts:out/server/services/TestService@OnPlayerJoined": "server/services/TestService@OnPlayerJoined"
+		"le_experiment_game_ts:out/server/services/TestService@OnPlayerJoined": "server/services/TestService@OnPlayerJoined",
+		"le_experiment_game_ts:out/client/controllers/R6ProceduralAnimations@MyController": "client/controllers/R6ProceduralAnimations@MyController",
+		"le_experiment_game_ts:out/client/controllers/FakeLegs@Leg": "client/controllers/FakeLegs@Leg",
+		"le_experiment_game_ts:out/client/controllers/FakeLegs@R6Legs": "client/controllers/FakeLegs@R6Legs",
+		"le_experiment_game_ts:out/server/services/EnemyService@MyService": "server/services/EnemyService@MyService",
+		"le_experiment_game_ts:out/server/services/EnemyService@EnemyService": "server/services/EnemyService@EnemyService",
+		"le_experiment_game_ts:out/decorators/TestDecorator@test": "decorators/TestDecorator@test",
+		"le_experiment_game_ts:out/shared/Shapes@wah": "shared/Shapes@wah",
+		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnRemove": "interfaces/CustomInterfaces@OnRemove"
 	},
 	"metadata": {}
 }

@@ -1,21 +1,23 @@
 import { Component } from "@flamework/components";
 import { OnTick } from "@flamework/core";
-import { OnDestroy } from "interfaces/CustomInterfaces";
+import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
 import { GameObject } from "shared/abstract/GameObject";
 @Component({
 	tag: "random.color",
 })
-export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestroy {
+export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestroy, OnRemove {
 	constructor() {
 		super();
 		this.InitialColor = this.instance.BrickColor;
 	}
 	onDestroy(): void {
+		print("destroyed!");
 		const explosion = new Instance("Explosion");
 		explosion.Position = this.instance.Position;
 		explosion.Parent = game.Workspace;
 	}
-	protected onRemove(): void {
+	onRemove(): void {
+		print("removed!");
 		this.instance.BrickColor = this.InitialColor;
 	}
 	private lastFrame = 0;

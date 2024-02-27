@@ -14,9 +14,8 @@ export class RandomTransparency extends GameObject<{}, Part> implements OnTick, 
 	onStart(): void {
 		print("start!!!!");
 		this.StartCoroutine(() => {
-			while (true) {
+			while (task.wait(1)) {
 				print("Wah");
-				task.wait(1);
 			}
 		});
 	}

@@ -1,14 +1,20 @@
 import { BaseComponent } from "@flamework/components";
-import { OnDestroy } from "interfaces/CustomInterfaces";
-export class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
+import Maid from "@rbxts/maid";
+import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
+import { hasMethod } from "shared/Utils";
+export abstract class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
+	private maid?: Maid;
 	constructor() {
 		super();
-		if (!GameObject.onDestroyCheck(this)) return;
-		this.DestroyingRBXScriptConnection = this.instance.Destroying.Connect(() => this.DestroyingEvent!());
-	}
-	static onDestroyCheck<T extends OnDestroy>(component: unknown) {
-		// Check if the object has the onDestroy method, which is unique to the OnDestroy interface
-		return typeIs((component as T).onDestroy, "function");
+		if (hasMethod(this, "onDestroy") || hasMethod(this, "onRemove")) {
+			if (!this.maid) this.maid = new Maid();
+		} else {
+			return;
+		}
+
+		if (hasMethod(this, "onRemove")) this.maid.GiveTask(() => (this as unknown as OnRemove)!.onRemove());
+		if (hasMethod(this, "onDestroy"))
+			this.maid.GiveTask(this.instance.Destroying.Connect(() => this.DestroyingEvent!()));
 	}
 	private DestroyingEvent(): void {
 		try {
@@ -16,10 +22,7 @@ export class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
 		} catch (err) {
 			warn(`Failed to call onDestroy on ${this.instance.Name}`, err);
 		}
-		this.DestroyingRBXScriptConnection?.Disconnect();
-		this.DestroyingRBXScriptConnection = undefined;
 	}
-	protected onRemove(): void {}
 
 	StartCoroutine(callback: Callback): void {
 		if (!this.Threads) this.Threads = new Map();
@@ -45,14 +48,12 @@ export class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
 	// Clarification: this method happens when a tag is removed from the object or when the object is destroyed.
 	override destroy(): void {
 		super.destroy(); // UNSURE which order to go by. I'll run the initial method first.
-		this.CleanCustom();
-		this.DestroyingRBXScriptConnection?.Disconnect();
-		this.DestroyingRBXScriptConnection = undefined;
+		this.Clean();
 	}
 
-	private CleanCustom(): void {
+	private Clean(): void {
 		try {
-			this.onRemove();
+			this.maid?.Destroy();
 			this.StopCoroutines();
 		} catch (err) {
 			warn(`Failed to call onRemove on ${this.instance.Name}`, err);
@@ -60,5 +61,4 @@ export class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
 	}
 
 	private Threads?: Map<Callback, thread>;
-	private DestroyingRBXScriptConnection?: RBXScriptConnection;
 }

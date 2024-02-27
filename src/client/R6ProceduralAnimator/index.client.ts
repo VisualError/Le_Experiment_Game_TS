@@ -16,7 +16,6 @@ function createFakeLegs(
 ): [Motor6D[], Motor6D[], BasePart, BasePart] {
 	// Create Fake Upper Left Leg
 	const FakeUpperLLeg = new Instance("Part");
-	FakeUpperLLeg.Name = "FakeUpperLLeg";
 	FakeUpperLLeg.Transparency = 1;
 	FakeUpperLLeg.Size = new Vector3(0.1, 0.1, 0.1);
 	FakeUpperLLeg.CanCollide = false;
@@ -44,7 +43,6 @@ function createFakeLegs(
 
 	// Create Fake Upper Right Leg
 	const FakeUpperRLeg = new Instance("Part");
-	FakeUpperRLeg.Name = "FakeUpperRLeg";
 	FakeUpperRLeg.Transparency = 1;
 	FakeUpperRLeg.Size = new Vector3(0.1, 0.1, 0.1);
 	FakeUpperRLeg.CanCollide = false;
@@ -219,7 +217,7 @@ function giveCharacterIK(character: Model) {
 		animator.ConnectFootStepSound(objectValue.Value as Sound);
 	}
 	// Begin Animation.
-	const animationConnection = RunService.PreSimulation.Connect(function (dt) {
+	const animationConnection = RunService.Heartbeat.Connect(function (dt) {
 		animator.Animate(dt);
 	});
 
