@@ -1,0 +1,11 @@
+{
+	"version": 1,
+	"flameworkVersion": "1.1.1",
+	"identifiers": {
+		"le_experiment_game_ts:out/client/R6ProceduralAnimator/FakeLegs@Leg": "client/R6ProceduralAnimator/FakeLegs@Leg",
+		"le_experiment_game_ts:out/client/R6ProceduralAnimator/FakeLegs@R6Legs": "client/R6ProceduralAnimator/FakeLegs@R6Legs",
+		"le_experiment_game_ts:out/client/R6ProceduralAnimator/ProceduralAnimator@ProceduralAnimator": "client/R6ProceduralAnimator/ProceduralAnimator@ProceduralAnimator",
+		"le_experiment_game_ts:out/shared/components/RandomColor@RandomColor": "shared/components/RandomColor@RandomColor"
+	},
+	"metadata": {}
+}

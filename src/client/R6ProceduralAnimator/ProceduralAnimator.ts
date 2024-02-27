@@ -101,6 +101,7 @@ class ProceduralAnimator {
 		}
 	}
 
+	// TODO: Make this more efficient, or use the new roblox bones/IKControl system.
 	MoveLegs(stepCycle: number, dt: number) {
 		for (const [_, Leg] of pairs(this.Legs)) {
 			const strideCF = this.DefaultStrideCF;
@@ -130,7 +131,7 @@ class ProceduralAnimator {
 			);
 			const targetPos = hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
 			const footPos = targetPos;
-			Leg.CCDIKController.CCDIKIterateUntil(footPos, IKTolerance);
+			Leg.CCDIKController.CCDIKIterateOnce(footPos, IKTolerance);
 			if (!Leg.TouchedGround && raycastResult) {
 				this.FootStep.Fire(raycastResult);
 			}

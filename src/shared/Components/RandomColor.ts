@@ -1,33 +1,26 @@
-import Component from "shared/AbstractClasses/ComponentAbstract";
-/**
- * A component that changes the color of a part at random intervals.
- */
-class RandomColor extends Component {
-	/**
-	 * Creates a new RandomColor component.
-	 * @param part The part to change the color of.
-	 */
-	constructor(part: Part) {
-		super(part);
-		this.InitialColor = part.BrickColor;
-		this.Part = part;
-		this.Start();
+import { BaseComponent, Component } from "@flamework/components";
+import { OnStart, OnTick } from "@flamework/core";
+@Component({
+	tag: "random.color",
+})
+export class RandomColor extends BaseComponent<{}, Part> implements OnTick, OnStart {
+	constructor() {
+		super();
+		this.InitialColor = this.instance.BrickColor;
 	}
 	InitialColor: BrickColor;
-	Part: Part;
-	Dispose(): void {
-		this.Part.BrickColor = this.InitialColor;
-		super.Dispose();
+	onStart(): void {
+		print("start!!!!");
 	}
-
-	lastFrame = 0;
-	Update(deltaTime: number): void {
-		this.lastFrame += deltaTime;
-		if (this.lastFrame >= 10) {
-			this.lastFrame = 0;
-			this.Part!.BrickColor = BrickColor.random();
-		}
+	private lastFrame = 0;
+	onTick(dt: number): void {
+		this.lastFrame += dt;
+		if (this.lastFrame < 2) return;
+		this.instance.BrickColor = BrickColor.random();
+		this.lastFrame = 0;
+	}
+	destroy(): void {
+		print("Destroy called!");
+		super.destroy();
 	}
 }
-
-export = RandomColor;
