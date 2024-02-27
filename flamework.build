@@ -5,7 +5,13 @@
 		"le_experiment_game_ts:out/client/R6ProceduralAnimator/FakeLegs@Leg": "client/R6ProceduralAnimator/FakeLegs@Leg",
 		"le_experiment_game_ts:out/client/R6ProceduralAnimator/FakeLegs@R6Legs": "client/R6ProceduralAnimator/FakeLegs@R6Legs",
 		"le_experiment_game_ts:out/client/R6ProceduralAnimator/ProceduralAnimator@ProceduralAnimator": "client/R6ProceduralAnimator/ProceduralAnimator@ProceduralAnimator",
-		"le_experiment_game_ts:out/shared/components/RandomColor@RandomColor": "shared/components/RandomColor@RandomColor"
+		"le_experiment_game_ts:out/shared/components/RandomColor@RandomColor": "shared/components/RandomColor@RandomColor",
+		"le_experiment_game_ts:out/shared/abstract/GameObject@RandomColor": "shared/abstract/GameObject@RandomColor",
+		"le_experiment_game_ts:out/shared/abstract/GameObject@GameObject": "shared/abstract/GameObject@GameObject",
+		"le_experiment_game_ts:out/interfaces/OnDestroy@OnDestroy": "interfaces/OnDestroy@OnDestroy",
+		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnDestroy": "interfaces/CustomInterfaces@OnDestroy",
+		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomColor": "shared/components/RandomTransparency@RandomColor",
+		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "shared/components/RandomTransparency@RandomTransparency"
 	},
 	"metadata": {}
 }
