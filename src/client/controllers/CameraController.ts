@@ -43,7 +43,7 @@ export class CameraController implements OnStart {
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
-	private static dampening = 0.8;
+	private static dampening = 2;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
@@ -195,7 +195,7 @@ export class CameraController implements OnStart {
 				.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
 
-			const goal = targetPosition.add(this.cameraOffset); // Apply the camera offset
+			const goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
 
 			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
 			this.spring.goal = goal;
@@ -205,10 +205,9 @@ export class CameraController implements OnStart {
 				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
 				// Calculate the rotation CFrame based on the accumulated rotation angles
 				// Apply the rotation CFrame to the camera's position
-				const newCameraPosition = rotationCFrame.mul(new CFrame(this.cameraOffset)).add(targetPosition);
-
+				const finalPosition = rotationCFrame.add(this.spring.position);
 				// Apply the rotation CFrame to the new camera position
-				Workspace.CurrentCamera.CFrame = newCameraPosition;
+				Workspace.CurrentCamera.CFrame = finalPosition;
 			}
 		}
 	}
