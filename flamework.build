@@ -16,7 +16,10 @@
 		"le_experiment_game_ts:out/client/controllers/CirculationBehaviour/CirculationBehaviour@CirculationBehaviour": "client/controllers/CirculationBehaviour/CirculationBehaviour@CirculationBehaviour",
 		"le_experiment_game_ts:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController",
 		"le_experiment_game_ts:out/client/controllers/SprintController@SprintController": "client/controllers/SprintController@SprintController",
-		"le_experiment_game_ts:out/client/controllers/EventController@EventController": "client/controllers/EventController@EventController"
+		"le_experiment_game_ts:out/client/controllers/EventController@EventController": "client/controllers/EventController@EventController",
+		"le_experiment_game_ts:out/client/controllers/CameraController@BasePartPositionProvider": "client/controllers/CameraController@BasePartPositionProvider",
+		"le_experiment_game_ts:out/client/controllers/CameraController@PlayerPositionProvider": "client/controllers/CameraController@PlayerPositionProvider",
+		"le_experiment_game_ts:out/client/controllers/CameraController@ModelPositionProvider": "client/controllers/CameraController@ModelPositionProvider"
 	},
 	"metadata": {}
 }

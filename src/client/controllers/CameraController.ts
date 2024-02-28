@@ -3,6 +3,43 @@ import Maid from "@rbxts/maid";
 import { Players, RunService, Workspace, UserInputService } from "@rbxts/services";
 import Spring from "@rbxts/spring";
 
+type PositionProvider = {
+	getPosition(): Vector3;
+	instance: Instance;
+};
+
+class BasePartPositionProvider implements PositionProvider {
+	constructor(private basePart: BasePart) {
+		this.instance = basePart;
+	}
+	getPosition(): Vector3 {
+		return this.basePart.Position;
+	}
+	instance: Instance;
+}
+
+class PlayerPositionProvider implements PositionProvider {
+	constructor(private player: Player) {
+		this.instance = player;
+	}
+	instance: Instance;
+
+	getPosition(): Vector3 {
+		return this.player.Character?.PrimaryPart?.Position || new Vector3();
+	}
+}
+
+class ModelPositionProvider implements PositionProvider {
+	constructor(private model: Model) {
+		this.instance = model;
+	}
+	instance: Instance;
+
+	getPosition(): Vector3 {
+		return this.model.PrimaryPart?.Position || new Vector3();
+	}
+}
+
 @Controller()
 export class CameraController implements OnStart {
 	maid = new Maid();
@@ -10,8 +47,9 @@ export class CameraController implements OnStart {
 	isRightMouseDown = false; // Track if the right mouse button is down
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
-	private static target?: BasePart;
+	private static target?: PositionProvider;
 	private static dampening = 0.8;
+	private static isFirstPerson = false;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
@@ -33,23 +71,23 @@ export class CameraController implements OnStart {
 						if (this.currentIndex >= children.size()) {
 							// Reset the index to 0 if it exceeds the array length
 							this.currentIndex = 0;
-							CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+							CameraController.setTarget(Players.LocalPlayer);
 							return;
 						} else {
 							this.currentIndex++;
 						}
 						let randomChild = children[this.currentIndex];
-						while (!randomChild || !randomChild.IsA("Part")) {
+						print(randomChild);
+						while (!randomChild || !CameraController.setTarget(randomChild)) {
 							this.currentIndex++;
 							if (this.currentIndex >= children.size()) {
 								// Reset the index to 0 if it exceeds the array length
 								this.currentIndex = 0;
-								CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+								CameraController.setTarget(Players.LocalPlayer);
 								return;
 							}
 							randomChild = children[this.currentIndex];
 						}
-						if (randomChild.IsA("BasePart")) CameraController.setTarget(randomChild as BasePart);
 						print(CameraController.target);
 					}
 				}
@@ -104,7 +142,7 @@ export class CameraController implements OnStart {
 
 		this.maid.GiveTask(
 			Players.LocalPlayer.CharacterAdded.Connect((character) => {
-				CameraController.setTarget(character.PrimaryPart);
+				CameraController.setTarget(character);
 			}),
 		);
 
@@ -118,9 +156,37 @@ export class CameraController implements OnStart {
 		);
 	}
 
-	static setTarget<T extends BasePart>(target?: T): void {
-		if (!target) this.target = undefined;
-		this.target = target;
+	static setTarget<T extends Instance>(target_?: T): boolean {
+		print("called!");
+		if (!target_) {
+			this.target = new PlayerPositionProvider(Players.LocalPlayer);
+			print("Player");
+		} else {
+			if (target_.IsA("BasePart")) {
+				this.target = new BasePartPositionProvider(target_);
+				print("BasePart");
+				return true;
+			} else if (target_.IsA("Player")) {
+				this.target = new PlayerPositionProvider(target_);
+				print("Player");
+				return true;
+			} else if (target_.IsA("Model")) {
+				this.target = new ModelPositionProvider(target_);
+				print("Model");
+				return true;
+			} else {
+				this.target = new PlayerPositionProvider(Players.LocalPlayer);
+				print("Player");
+				return false;
+			}
+		}
+		print("returning false");
+		return false;
+	}
+
+	// Example method to get the position of the target
+	static getTargetPosition(): Vector3 | undefined {
+		return this.target?.getPosition();
 	}
 
 	static setDampening(number: number): void {
@@ -128,10 +194,9 @@ export class CameraController implements OnStart {
 	}
 
 	Connection(dt: number): void {
-		if (!CameraController.target && Players.LocalPlayer.Character?.PrimaryPart)
-			CameraController.setTarget(Players.LocalPlayer.Character.PrimaryPart);
+		if (!CameraController.target && Players.LocalPlayer) CameraController.setTarget(Players.LocalPlayer.Character);
 		if (CameraController.target) {
-			const goal = CameraController.target.Position.add(this.cameraOffset); // Apply the camera offset
+			const goal = CameraController.target.getPosition().add(this.cameraOffset); // Apply the camera offset
 			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
 			this.spring.goal = goal;
 			this.spring.update(dt);
@@ -142,14 +207,9 @@ export class CameraController implements OnStart {
 					.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 					.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
 				// Apply the rotation CFrame to the camera's position
-
-				// Clamp accumulatedHorizontalAngle when in first person
-				if (this.cameraOffset.Z === 0) {
-					this.accumulatedHorizontalAngle = math.clamp(this.accumulatedHorizontalAngle, -90, 90);
-				}
 				const finalCFrame = rotationCFrame
-					.mul(new CFrame(this.spring.position).sub(CameraController.target.Position))
-					.add(CameraController.target.Position);
+					.mul(new CFrame(this.spring.position).sub(CameraController.target.getPosition()))
+					.add(CameraController.target.getPosition());
 				Workspace.CurrentCamera.CFrame = finalCFrame;
 			}
 		}
