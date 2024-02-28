@@ -10,13 +10,14 @@ export class CameraController implements OnStart {
 	isRightMouseDown = false; // Track if the right mouse button is down
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
-	static target?: BasePart;
+	private static target?: BasePart;
+	private static dampening = 0.8;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
 
 	onStart(): void {
-		this.maid.GiveTask(RunService.Heartbeat.Connect((dt) => this.Connection(dt)));
+		this.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
 		// Listen for right-click to start orbiting
 		this.maid.GiveTask(
 			UserInputService.InputBegan.Connect((input, gameProcessedEvent) => {
@@ -28,17 +29,28 @@ export class CameraController implements OnStart {
 				}
 				if (input.UserInputType === Enum.UserInputType.Keyboard) {
 					if (input.KeyCode === Enum.KeyCode.E) {
-						const children = game.Workspace.GetChildren();
+						const children = game.Workspace.GetDescendants();
 						if (this.currentIndex >= children.size()) {
 							// Reset the index to 0 if it exceeds the array length
 							this.currentIndex = 0;
+							CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+							return;
 						} else {
 							this.currentIndex++;
 						}
-						const randomChild = children[this.currentIndex];
-						if (randomChild === undefined)
-							return CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+						let randomChild = children[this.currentIndex];
+						while (!randomChild || !randomChild.IsA("Part")) {
+							this.currentIndex++;
+							if (this.currentIndex >= children.size()) {
+								// Reset the index to 0 if it exceeds the array length
+								this.currentIndex = 0;
+								CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+								return;
+							}
+							randomChild = children[this.currentIndex];
+						}
 						if (randomChild.IsA("BasePart")) CameraController.setTarget(randomChild as BasePart);
+						print(CameraController.target);
 					}
 				}
 			}),
@@ -90,6 +102,12 @@ export class CameraController implements OnStart {
 			}),
 		);
 
+		this.maid.GiveTask(
+			Players.LocalPlayer.CharacterAdded.Connect((character) => {
+				CameraController.setTarget(character.PrimaryPart);
+			}),
+		);
+
 		// Maid will commit sudoku when player disconnects.
 		this.maid.GiveTask(
 			Players.PlayerRemoving.Connect((player: Player) => {
@@ -105,12 +123,16 @@ export class CameraController implements OnStart {
 		this.target = target;
 	}
 
+	static setDampening(number: number): void {
+		this.dampening = number;
+	}
+
 	Connection(dt: number): void {
 		if (!CameraController.target && Players.LocalPlayer.Character?.PrimaryPart)
 			CameraController.setTarget(Players.LocalPlayer.Character.PrimaryPart);
 		if (CameraController.target) {
 			const goal = CameraController.target.Position.add(this.cameraOffset); // Apply the camera offset
-			if (!this.spring) this.spring = new Spring(goal, undefined, goal, 1);
+			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
 			this.spring.goal = goal;
 			this.spring.update(dt);
 			if (Workspace.CurrentCamera) {
