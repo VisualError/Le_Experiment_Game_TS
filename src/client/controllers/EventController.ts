@@ -1,5 +1,4 @@
 import { Controller, OnStart } from "@flamework/core";
-import { CameraController } from "./CameraController";
 
 @Controller()
 export class EventController implements OnStart {
