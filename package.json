@@ -33,6 +33,8 @@
     "@rbxts/beacon": "^2.1.1",
     "@rbxts/ccdik-controller": "^1.0.1-ts3",
     "@rbxts/maid": "^1.1.0",
-    "@rbxts/object-utils": "^1.0.4"
+    "@rbxts/object-utils": "^1.0.4",
+    "@rbxts/services": "^1.5.4",
+    "@rbxts/spring": "^1.0.2"
   }
 }

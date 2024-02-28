@@ -1,3 +1,6 @@
+/**
+ * An interface that defines a method for a component to be notified when its instance is destroyed.
+ */
 export interface OnDestroy {
 	/**
 	 * This function will be called when a components instance is destroyed.
@@ -6,7 +9,9 @@ export interface OnDestroy {
 	 */
 	onDestroy(): void;
 }
-
+/**
+ * An interface that defines a method for a component to be notified when it is removed from an instance.
+ */
 export interface OnRemove {
 	/**
 	 * This function will be called when a component is removed from an instance.

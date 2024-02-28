@@ -12,7 +12,9 @@
 		"le_experiment_game_ts:out/shared/components/RandomSize@RandomColor": "shared/components/RandomSize@RandomColor",
 		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "shared/components/RandomTransparency@RandomTransparency",
 		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnDestroy": "interfaces/CustomInterfaces@OnDestroy",
-		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnRemove": "interfaces/CustomInterfaces@OnRemove"
+		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnRemove": "interfaces/CustomInterfaces@OnRemove",
+		"le_experiment_game_ts:out/client/controllers/CirculationBehaviour/CirculationBehaviour@CirculationBehaviour": "client/controllers/CirculationBehaviour/CirculationBehaviour@CirculationBehaviour",
+		"le_experiment_game_ts:out/client/controllers/CameraController@CameraController": "client/controllers/CameraController@CameraController"
 	},
 	"metadata": {}
 }
