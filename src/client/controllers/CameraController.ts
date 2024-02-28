@@ -2,6 +2,7 @@ import { Controller, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { Players, RunService, Workspace, UserInputService } from "@rbxts/services";
 import Spring from "@rbxts/spring";
+import { CreateInstance } from "shared/Utils";
 
 type PositionProvider = {
 	getPosition(): Vector3;
@@ -43,10 +44,12 @@ export class CameraController implements OnStart {
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
-	private static dampening = 3;
+	private static dampening = 2;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
+	private static minDistance = 2;
+	private static maxDistance = 100;
 
 	onStart(): void {
 		this.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
@@ -122,7 +125,7 @@ export class CameraController implements OnStart {
 						this.cameraOffset = new Vector3(
 							this.cameraOffset.X,
 							this.cameraOffset.Y,
-							math.clamp(this.cameraOffset.Z, 2, 40),
+							math.clamp(this.cameraOffset.Z, CameraController.minDistance, CameraController.maxDistance),
 						);
 						break;
 					case Enum.UserInputType.MouseMovement:
@@ -213,7 +216,7 @@ export class CameraController implements OnStart {
 				const params = new RaycastParams();
 				params.FilterType = Enum.RaycastFilterType.Exclude;
 				params.AddToFilter(CameraController.target.instance);
-				params.AddToFilter(Players.LocalPlayer.Character!);
+				//params.AddToFilter(Players.LocalPlayer.Character!);
 
 				const result = game.Workspace.Raycast(targetPosition, goal.sub(targetPosition), params);
 
