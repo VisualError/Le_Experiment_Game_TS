@@ -13,6 +13,7 @@ export class CameraController implements OnStart {
 	static target?: BasePart;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
+	private currentIndex = 0;
 
 	onStart(): void {
 		this.maid.GiveTask(RunService.Heartbeat.Connect((dt) => this.Connection(dt)));
@@ -24,6 +25,21 @@ export class CameraController implements OnStart {
 				if (input.UserInputType === Enum.UserInputType.MouseButton2) {
 					this.isRightMouseDown = true; // Right mouse button is down
 					this.oldMousePos = input.Position;
+				}
+				if (input.UserInputType === Enum.UserInputType.Keyboard) {
+					if (input.KeyCode === Enum.KeyCode.E) {
+						const children = game.Workspace.GetChildren();
+						if (this.currentIndex >= children.size()) {
+							// Reset the index to 0 if it exceeds the array length
+							this.currentIndex = 0;
+						} else {
+							this.currentIndex++;
+						}
+						const randomChild = children[this.currentIndex];
+						if (randomChild === undefined)
+							return CameraController.setTarget(Players.LocalPlayer.Character?.PrimaryPart);
+						if (randomChild.IsA("BasePart")) CameraController.setTarget(randomChild as BasePart);
+					}
 				}
 			}),
 		);
@@ -84,13 +100,14 @@ export class CameraController implements OnStart {
 		);
 	}
 
-	static SetTarget<T extends BasePart>(target: T): void {
-		if (target) this.target = target;
+	static setTarget<T extends BasePart>(target?: T): void {
+		if (!target) this.target = undefined;
+		this.target = target;
 	}
 
 	Connection(dt: number): void {
 		if (!CameraController.target && Players.LocalPlayer.Character?.PrimaryPart)
-			CameraController.SetTarget(Players.LocalPlayer.Character.PrimaryPart);
+			CameraController.setTarget(Players.LocalPlayer.Character.PrimaryPart);
 		if (CameraController.target) {
 			const goal = CameraController.target.Position.add(this.cameraOffset); // Apply the camera offset
 			if (!this.spring) this.spring = new Spring(goal, undefined, goal, 1);
