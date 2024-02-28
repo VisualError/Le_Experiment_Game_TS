@@ -79,7 +79,7 @@ class ProceduralAnimator {
 	Animate(dt: number): void {
 		const dt10 = math.min(dt * 10, 1); // Normalize dt for our needs
 		const assemblyVelocity = this.RootPart.AssemblyLinearVelocity;
-		const rootVelocity = assemblyVelocity.mul(x_and_z);
+		const rootVelocity = assemblyVelocity;
 		this.yVelocity = assemblyVelocity.Y;
 		this.lookVector = this.RootPart.CFrame.LookVector;
 		// Begin the step
