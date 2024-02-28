@@ -5,12 +5,16 @@ import Spring from "@rbxts/spring";
 
 type PositionProvider = {
 	getPosition(): Vector3;
+	getCFrame(): CFrame;
 	instance: Instance;
 };
 
 class BasePartPositionProvider implements PositionProvider {
 	constructor(private basePart: BasePart) {
 		this.instance = basePart;
+	}
+	getCFrame(): CFrame {
+		return this.basePart.CFrame;
 	}
 	getPosition(): Vector3 {
 		return this.basePart.Position;
@@ -23,7 +27,9 @@ class ModelPositionProvider implements PositionProvider {
 		this.instance = model;
 	}
 	instance: Instance;
-
+	getCFrame(): CFrame {
+		return this.model.PrimaryPart?.CFrame || new CFrame();
+	}
 	getPosition(): Vector3 {
 		return this.model.PrimaryPart?.Position || new Vector3();
 	}
@@ -38,7 +44,6 @@ export class CameraController implements OnStart {
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
 	private static dampening = 0.8;
-	private static isFirstPerson = false;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
@@ -184,21 +189,26 @@ export class CameraController implements OnStart {
 
 	Connection(dt: number): void {
 		if (CameraController.target) {
-			const goal = CameraController.target.getPosition().add(this.cameraOffset); // Apply the camera offset
+			const targetPosition = CameraController.target.getPosition();
+
+			const rotationCFrame = new CFrame()
+				.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
+				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
+
+			const goal = targetPosition.add(this.cameraOffset); // Apply the camera offset
+
 			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
 			this.spring.goal = goal;
 			this.spring.update(dt);
+
 			if (Workspace.CurrentCamera) {
 				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
 				// Calculate the rotation CFrame based on the accumulated rotation angles
-				const rotationCFrame = new CFrame()
-					.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
-					.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
 				// Apply the rotation CFrame to the camera's position
-				const finalCFrame = rotationCFrame
-					.mul(new CFrame(this.spring.position).sub(CameraController.target.getPosition()))
-					.add(CameraController.target.getPosition());
-				Workspace.CurrentCamera.CFrame = finalCFrame;
+				const newCameraPosition = rotationCFrame.mul(new CFrame(this.cameraOffset)).add(targetPosition);
+
+				// Apply the rotation CFrame to the new camera position
+				Workspace.CurrentCamera.CFrame = newCameraPosition;
 			}
 		}
 	}
