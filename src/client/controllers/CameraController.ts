@@ -142,9 +142,15 @@ export class CameraController implements OnStart {
 					.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 					.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
 				// Apply the rotation CFrame to the camera's position
-				Workspace.CurrentCamera.CFrame = rotationCFrame
+
+				// Clamp accumulatedHorizontalAngle when in first person
+				if (this.cameraOffset.Z === 0) {
+					this.accumulatedHorizontalAngle = math.clamp(this.accumulatedHorizontalAngle, -90, 90);
+				}
+				const finalCFrame = rotationCFrame
 					.mul(new CFrame(this.spring.position).sub(CameraController.target.Position))
 					.add(CameraController.target.Position);
+				Workspace.CurrentCamera.CFrame = finalCFrame;
 			}
 		}
 	}
