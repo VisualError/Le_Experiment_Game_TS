@@ -61,7 +61,7 @@ export class CameraController implements OnStart {
 				}
 				if (input.UserInputType === Enum.UserInputType.Keyboard) {
 					if (input.KeyCode === Enum.KeyCode.E) {
-						const children = game.Workspace.GetDescendants();
+						const children = game.Workspace.GetChildren();
 						if (this.currentIndex >= children.size()) {
 							// Reset the index to 0 if it exceeds the array length
 							this.currentIndex = 0;
@@ -209,14 +209,7 @@ export class CameraController implements OnStart {
 				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
 
 			let goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
-			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
-			this.spring.goal = goal;
-			this.spring.dampingRatio = CameraController.dampening;
-			this.spring.update(dt);
-
 			if (Workspace.CurrentCamera) {
-				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
-
 				const params = new RaycastParams();
 				params.FilterType = Enum.RaycastFilterType.Exclude;
 				params.AddToFilter(CameraController.target.instance);
@@ -229,11 +222,19 @@ export class CameraController implements OnStart {
 					const hitPosition = result.Position;
 					const directionToGoal = goal.sub(targetPosition).Unit;
 					const distanceToHit = hitPosition.sub(targetPosition).Magnitude;
-					goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.83)); // The 0.8 is here coz it clips idk why.
+					goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.8)); // The 0.8 is here coz it clips and idk why.
 				}
+			}
+			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
+			this.spring.goal = goal;
+			this.spring.dampingRatio = CameraController.dampening;
+			this.spring.update(dt);
+
+			if (Workspace.CurrentCamera) {
+				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
 				// Calculate the rotation CFrame based on the accumulated rotation angles
 				// Apply the rotation CFrame to the camera's position
-				const finalPosition = rotationCFrame.add(goal);
+				const finalPosition = rotationCFrame.add(this.spring.position);
 				// Apply the rotation CFrame to the new camera position
 				Workspace.CurrentCamera.CFrame = finalPosition;
 			}
