@@ -26,6 +26,20 @@ export type InstanceProperties = {
 	[K in keyof CreatableInstances]: Partial<WritableInstanceProperties<CreatableInstances[K]>>;
 };
 
-export function hasMethod<T extends object, M extends string>(obj: T, methodName: M) {
-	return methodName in obj;
+/**
+ * Determines whether an object has a specific method. During runtime.
+ * @param obj - The object to check.
+ * @param methodName - The name of the method to check for.
+ * @returns `true` if the object has the specified method; otherwise, `false`.
+ */
+export function hasMethod<T extends object>(
+	obj: object,
+	methodName: string,
+	callback?: (obj: T & Record<string, Callback>) => void,
+): boolean {
+	const hasMethod = methodName in obj;
+	if (hasMethod && callback) {
+		callback(obj as T & Record<string, Callback>);
+	}
+	return hasMethod;
 }

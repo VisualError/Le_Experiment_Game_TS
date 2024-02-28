@@ -12,16 +12,12 @@ export abstract class GameObject<A, I extends Instance> extends BaseComponent<A,
 			return;
 		}
 
-		if (hasMethod(this, "onRemove")) this.maid.GiveTask(() => (this as unknown as OnRemove)!.onRemove());
-		if (hasMethod(this, "onDestroy"))
-			this.maid.GiveTask(this.instance.Destroying.Connect(() => this.DestroyingEvent!()));
-	}
-	private DestroyingEvent(): void {
-		try {
-			(this as unknown as OnDestroy).onDestroy(); // Scuffed.
-		} catch (err) {
-			warn(`Failed to call onDestroy on ${this.instance.Name}`, err);
-		}
+		hasMethod<OnRemove>(this, "onRemove", (value) => {
+			this.maid?.GiveTask(() => value.onRemove());
+		});
+		hasMethod<OnDestroy>(this, "onDestroy", (value) => {
+			this.maid?.GiveTask(this.instance.Destroying.Connect(() => value.onDestroy()));
+		});
 	}
 
 	StartCoroutine(callback: Callback): void {

@@ -1,5 +1,6 @@
 import { Component } from "@flamework/components";
 import { OnPhysics, OnStart } from "@flamework/core";
+import { OnDestroy } from "interfaces/CustomInterfaces";
 import { GameObject } from "shared/abstract/GameObject";
 const TweenService = game.GetService("TweenService");
 

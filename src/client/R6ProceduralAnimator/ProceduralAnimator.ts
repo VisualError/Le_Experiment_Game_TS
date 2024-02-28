@@ -21,7 +21,7 @@ class ProceduralAnimator {
 	RootMotorC1Store?: CFrame;
 	RootMotorC0Store?: CFrame;
 	WaistCycle?: number;
-	Legs: R6Legs; // You might want to define a more specific type for Legs
+	Legs: R6Legs;
 	DefaultStride: number;
 	CycleSpeed: number;
 	DefaultStrideOffset: number;
