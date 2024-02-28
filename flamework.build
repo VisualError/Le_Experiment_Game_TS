@@ -21,7 +21,8 @@
 		"le_experiment_game_ts:out/client/controllers/CameraController@PlayerPositionProvider": "client/controllers/CameraController@PlayerPositionProvider",
 		"le_experiment_game_ts:out/client/controllers/CameraController@ModelPositionProvider": "client/controllers/CameraController@ModelPositionProvider",
 		"le_experiment_game_ts:out/client/controllers/FootstepSoundController@FootstepSoundController": "client/controllers/FootstepSoundController@FootstepSoundController",
-		"le_experiment_game_ts:out/shared/components/DestroyOnExplode@DestroyOnExplode": "shared/components/DestroyOnExplode@DestroyOnExplode"
+		"le_experiment_game_ts:out/shared/components/DestroyOnExplode@DestroyOnExplode": "shared/components/DestroyOnExplode@DestroyOnExplode",
+		"le_experiment_game_ts:out/client/controllers/CameraController@test": "client/controllers/CameraController@test"
 	},
 	"metadata": {}
 }

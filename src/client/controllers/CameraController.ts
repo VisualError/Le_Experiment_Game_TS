@@ -100,6 +100,7 @@ export class CameraController implements OnStart {
 		);
 
 		// Listen for mouse wheel scroll to change camera offset
+		// TODO: Disable spring when in first person.
 		this.maid.GiveTask(
 			UserInputService.InputChanged.Connect((input, gameProcessedEvent) => {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
@@ -150,26 +151,26 @@ export class CameraController implements OnStart {
 		);
 	}
 
-	static setTarget<T extends Instance>(target_?: T): boolean {
+	static setTarget<T extends Instance>(this: void, target_?: T): boolean {
 		print("called!");
 		if (!target_ && Players.LocalPlayer.Character) {
-			this.target = new ModelPositionProvider(Players.LocalPlayer.Character);
+			CameraController.target = new ModelPositionProvider(Players.LocalPlayer.Character);
 			print("Player");
 		} else if (target_) {
 			if (target_.IsA("BasePart")) {
-				this.target = new BasePartPositionProvider(target_);
+				CameraController.target = new BasePartPositionProvider(target_);
 				print("BasePart");
 				return true;
 			} else if (target_.IsA("Player")) {
-				this.target = new ModelPositionProvider(target_.Character!);
+				CameraController.target = new ModelPositionProvider(target_.Character!);
 				print("Player");
 				return true;
 			} else if (target_.IsA("Model")) {
-				this.target = new ModelPositionProvider(target_);
+				CameraController.target = new ModelPositionProvider(target_);
 				print("Model");
 				return true;
 			} else {
-				this.target = new ModelPositionProvider(Players.LocalPlayer.Character!);
+				CameraController.target = new ModelPositionProvider(Players.LocalPlayer.Character!);
 				print("Player");
 				return false;
 			}
@@ -179,12 +180,12 @@ export class CameraController implements OnStart {
 	}
 
 	// Example method to get the position of the target
-	static getTargetPosition(): Vector3 | undefined {
-		return this.target?.getPosition();
+	static getTargetPosition(this: void): Vector3 | undefined {
+		return CameraController.target?.getPosition();
 	}
 
-	static setDampening(number: number): void {
-		this.dampening = number;
+	static setDampening(this: void, number: number): void {
+		CameraController.dampening = number;
 	}
 
 	Connection(dt: number): void {
@@ -197,8 +198,9 @@ export class CameraController implements OnStart {
 
 			const goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
 
-			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
+			if (!this.spring) this.spring = new Spring(targetPosition, undefined, goal, CameraController.dampening);
 			this.spring.goal = goal;
+			this.spring.dampingRatio = CameraController.dampening;
 			this.spring.update(dt);
 
 			if (Workspace.CurrentCamera) {
