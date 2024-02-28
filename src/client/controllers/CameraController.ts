@@ -18,17 +18,6 @@ class BasePartPositionProvider implements PositionProvider {
 	instance: Instance;
 }
 
-class PlayerPositionProvider implements PositionProvider {
-	constructor(private player: Player) {
-		this.instance = player;
-	}
-	instance: Instance;
-
-	getPosition(): Vector3 {
-		return this.player.Character?.PrimaryPart?.Position || new Vector3();
-	}
-}
-
 class ModelPositionProvider implements PositionProvider {
 	constructor(private model: Model) {
 		this.instance = model;
@@ -158,16 +147,16 @@ export class CameraController implements OnStart {
 
 	static setTarget<T extends Instance>(target_?: T): boolean {
 		print("called!");
-		if (!target_) {
-			this.target = new PlayerPositionProvider(Players.LocalPlayer);
+		if (!target_ && Players.LocalPlayer.Character) {
+			this.target = new ModelPositionProvider(Players.LocalPlayer.Character);
 			print("Player");
-		} else {
+		} else if (target_) {
 			if (target_.IsA("BasePart")) {
 				this.target = new BasePartPositionProvider(target_);
 				print("BasePart");
 				return true;
 			} else if (target_.IsA("Player")) {
-				this.target = new PlayerPositionProvider(target_);
+				this.target = new ModelPositionProvider(target_.Character!);
 				print("Player");
 				return true;
 			} else if (target_.IsA("Model")) {
@@ -175,7 +164,7 @@ export class CameraController implements OnStart {
 				print("Model");
 				return true;
 			} else {
-				this.target = new PlayerPositionProvider(Players.LocalPlayer);
+				this.target = new ModelPositionProvider(Players.LocalPlayer.Character!);
 				print("Player");
 				return false;
 			}
@@ -194,7 +183,6 @@ export class CameraController implements OnStart {
 	}
 
 	Connection(dt: number): void {
-		if (!CameraController.target && Players.LocalPlayer) CameraController.setTarget(Players.LocalPlayer.Character);
 		if (CameraController.target) {
 			const goal = CameraController.target.getPosition().add(this.cameraOffset); // Apply the camera offset
 			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
