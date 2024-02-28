@@ -1,4 +1,5 @@
 import { Flamework } from "@flamework/core";
+import { Players } from "@rbxts/services";
 import { CreateInstance } from "shared/Utils";
 
 Flamework.addPaths("src/shared/components");

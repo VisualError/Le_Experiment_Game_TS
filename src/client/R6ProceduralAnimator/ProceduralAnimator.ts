@@ -31,6 +31,7 @@ class ProceduralAnimator {
 	FootStep: Signal<RaycastResult | undefined>;
 	MaxSpeed: number;
 	EngineSound: Sound | undefined;
+	public static footStepSound: Sound = new Instance("Sound");
 	WalkBounce: number;
 	SwayX: number;
 	RandomNumGenerator: Random;
@@ -163,19 +164,19 @@ class ProceduralAnimator {
 		}
 	}
 
-	ConnectFootStepSound(sound: Sound): void {
+	ConnectFootStepSound(): void {
 		this.FootStep.Connect((raycastResult: RaycastResult | undefined) => {
 			if (raycastResult === undefined) return;
 			const soundPositionAttachment = CreateInstance("Attachment", {
 				WorldPosition: raycastResult.Position,
 				Parent: game.Workspace.Terrain,
 			});
-			const footStepSound = sound.Clone();
+			const sound = ProceduralAnimator.footStepSound.Clone();
 			const randomPlaybackSpeed = this.RandomNumGenerator.NextNumber(0.9, 1.1);
-			footStepSound.PlaybackSpeed = randomPlaybackSpeed;
+			sound.PlaybackSpeed = randomPlaybackSpeed;
 			//footStepSound.SoundId = footStepSound.SoundId;
-			footStepSound.PlayOnRemove = true;
-			footStepSound.Parent = soundPositionAttachment;
+			sound.PlayOnRemove = true;
+			sound.Parent = soundPositionAttachment;
 			soundPositionAttachment.Destroy();
 		});
 	}

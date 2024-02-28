@@ -212,10 +212,7 @@ function giveCharacterIK(character: Model) {
 
 	const runSound = humanoidRootPart.WaitForChild("Running") as Sound;
 	runSound.Volume = 0;
-	const objectValue = script.FindFirstChild("FootStepSound") as ObjectValue;
-	if (objectValue && objectValue.Value) {
-		animator.ConnectFootStepSound(objectValue.Value as Sound);
-	}
+	animator.ConnectFootStepSound();
 	// Begin Animation.
 	const animationConnection = RunService.Heartbeat.Connect(function (dt) {
 		animator.Animate(dt);
