@@ -237,7 +237,8 @@ export class CameraController implements OnStart {
 				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
 				// Calculate the rotation CFrame based on the accumulated rotation angles
 				// Apply the rotation CFrame to the camera's position
-				const finalPosition = rotationCFrame.add(this.spring.position);
+				const springToggle = this.spring.dampingRatio > 0 ? this.spring.position : goal;
+				const finalPosition = rotationCFrame.add(springToggle);
 				// Apply the rotation CFrame to the new camera position
 				Workspace.CurrentCamera.CFrame = finalPosition;
 			}

@@ -21,3 +21,20 @@ for (let i = 0; i < 10; i++) {
 	});
 	sphere.AddTag("random.color");
 }
+
+Players.PlayerAdded.Connect(function (Player: Player) {
+	Player.CharacterAdded.Connect(CharacterAdded);
+});
+
+function CharacterAdded(Character: Model) {
+	const Humanoid = Character.FindFirstChildOfClass("Humanoid");
+	Humanoid?.Touched.Connect(function (Touched) {
+		if (Touched.HasTag("death") && !(Humanoid.Health <= 0)) {
+			Humanoid.Health = 0;
+		}
+	});
+}
+
+for (const Player of Players.GetPlayers()) {
+	Player.CharacterAdded.Connect(CharacterAdded);
+}
