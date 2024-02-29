@@ -44,7 +44,7 @@ export class CameraController implements OnStart {
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
-	private static dampening = 2;
+	private static dampening = 6;
 	private accumulatedHorizontalAngle = 0;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
@@ -228,10 +228,14 @@ export class CameraController implements OnStart {
 					goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.8)); // The 0.8 is here coz it clips and idk why.
 				}
 			}
-			if (!this.spring) this.spring = new Spring(goal, undefined, goal, CameraController.dampening);
+			if (!this.spring) this.spring = new Spring(goal, 50, goal, CameraController.dampening);
 			this.spring.goal = goal;
 			this.spring.dampingRatio = CameraController.dampening;
-			this.spring.update(dt);
+			if (this.spring.dampingRatio > 0) {
+				this.spring.update(dt);
+			} else {
+				if (this.spring.position !== this.spring.goal) this.spring.resetToPosition(this.spring.goal);
+			}
 
 			if (Workspace.CurrentCamera) {
 				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
