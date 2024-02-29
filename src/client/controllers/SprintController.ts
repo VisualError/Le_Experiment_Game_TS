@@ -5,8 +5,5 @@ import { EventController } from "./EventController";
 export class SprintController implements OnStart {
 	constructor(public eventController: EventController) {}
 
-	onStart(): void {
-		print(this.eventController.testNumber);
-		this.eventController.testNumber = -100;
-	}
+	onStart(): void {}
 }

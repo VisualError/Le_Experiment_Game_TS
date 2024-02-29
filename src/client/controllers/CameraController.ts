@@ -2,11 +2,12 @@ import { Controller, OnStart } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { Players, RunService, Workspace, UserInputService } from "@rbxts/services";
 import Spring from "@rbxts/spring";
-import { CreateInstance } from "shared/Utils";
+import { EventController } from "./EventController";
 
 type PositionProvider = {
 	getPosition(): Vector3;
 	getCFrame(): CFrame;
+	getVelocity(): Vector3;
 	instance: Instance;
 };
 
@@ -19,6 +20,9 @@ class BasePartPositionProvider implements PositionProvider {
 	}
 	getPosition(): Vector3 {
 		return this.basePart.Position;
+	}
+	getVelocity(): Vector3 {
+		return this.basePart?.AssemblyLinearVelocity || new Vector3();
 	}
 	instance: Instance;
 }
@@ -34,11 +38,14 @@ class ModelPositionProvider implements PositionProvider {
 	getPosition(): Vector3 {
 		return this.model.PrimaryPart?.Position || new Vector3();
 	}
+
+	getVelocity(): Vector3 {
+		return this.model.PrimaryPart?.AssemblyLinearVelocity || new Vector3();
+	}
 }
 
 @Controller()
 export class CameraController implements OnStart {
-	maid = new Maid();
 	spring?: Spring<Vector3>;
 	isRightMouseDown = false; // Track if the right mouse button is down
 	oldMousePos?: Vector3; // Track the previous mouse position
@@ -51,10 +58,12 @@ export class CameraController implements OnStart {
 	private static minDistance = 2;
 	private static maxDistance = 100;
 
+	constructor(private eventController: EventController) {}
+
 	onStart(): void {
-		this.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
+		this.eventController.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
 		// Listen for right-click to start orbiting
-		this.maid.GiveTask(
+		this.eventController.maid.GiveTask(
 			UserInputService.InputBegan.Connect((input, gameProcessedEvent) => {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
@@ -102,7 +111,7 @@ export class CameraController implements OnStart {
 			}),
 		);
 
-		this.maid.GiveTask(
+		this.eventController.maid.GiveTask(
 			UserInputService.InputEnded.Connect((input, gameProcessedEvent) => {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
@@ -115,7 +124,7 @@ export class CameraController implements OnStart {
 
 		// Listen for mouse wheel scroll to change camera offset
 		// TODO: Disable spring when in first person.
-		this.maid.GiveTask(
+		this.eventController.maid.GiveTask(
 			UserInputService.InputChanged.Connect((input, gameProcessedEvent) => {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
@@ -149,18 +158,9 @@ export class CameraController implements OnStart {
 			}),
 		);
 
-		this.maid.GiveTask(
+		this.eventController.maid.GiveTask(
 			Players.LocalPlayer.CharacterAdded.Connect((character) => {
 				CameraController.setTarget(character);
-			}),
-		);
-
-		// Maid will commit sudoku when player disconnects.
-		this.maid.GiveTask(
-			Players.PlayerRemoving.Connect((player: Player) => {
-				if (player === Players.LocalPlayer) {
-					this.maid.Destroy();
-				}
 			}),
 		);
 	}
@@ -205,12 +205,12 @@ export class CameraController implements OnStart {
 	// TODO: Separate springs for camera rotation/camera position.
 	Connection(dt: number): void {
 		if (CameraController.target) {
-			const targetPosition = CameraController.target.getPosition();
-
+			const targetPosition = CameraController.target.getCFrame().Position;
+			const targetRotation = CameraController.target.getCFrame().Rotation; // Not using this yet..
+			// Calculate the camera's rotation based on the accumalated angles.
 			const rotationCFrame = new CFrame()
 				.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
-
 			let goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
 			if (Workspace.CurrentCamera) {
 				const params = new RaycastParams();
@@ -228,7 +228,7 @@ export class CameraController implements OnStart {
 					goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.8)); // The 0.8 is here coz it clips and idk why.
 				}
 			}
-			if (!this.spring) this.spring = new Spring(goal, 50, goal, CameraController.dampening);
+			if (!this.spring) this.spring = new Spring(targetPosition, 50, goal, CameraController.dampening);
 			this.spring.goal = goal;
 			this.spring.dampingRatio = CameraController.dampening;
 			if (this.spring.dampingRatio > 0) {
@@ -244,6 +244,7 @@ export class CameraController implements OnStart {
 				const springToggle = this.spring.dampingRatio > 0 ? this.spring.position : goal;
 				const finalPosition = rotationCFrame.add(springToggle);
 				// Apply the rotation CFrame to the new camera position
+
 				Workspace.CurrentCamera.CFrame = finalPosition;
 			}
 		}
