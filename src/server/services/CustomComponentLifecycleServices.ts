@@ -49,8 +49,7 @@ function UnsubscribeTickSingle(component: OnTickSingle): void {
 function SubscribeRemove(component: OnRemove) {
 	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
-	if (!instance || !gameObject) return;
-	if (!gameObject.maid) gameObject.maid = new Maid(); // In roblox lua, this maid will still be created even when the class doesn't have it.
+	if (!instance || !gameObject || !gameObject.maid) return;
 	gameObject.maid.GiveTask(() => component.onRemove());
 }
 function UnsubscribeRemove(component: OnRemove) {

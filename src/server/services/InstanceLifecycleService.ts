@@ -1,3 +1,4 @@
+import { BaseComponent, Component } from "@flamework/components";
 import { Service, OnStart, Modding } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { OnDestroy } from "interfaces/CustomInterfaces";
@@ -14,9 +15,8 @@ export class InstanceLifecycleService implements OnStart {
 function SubscribeToInstanceRemoved(component: OnDestroy) {
 	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
-	if (!instance || !gameObject) return;
-	if (!gameObject.maid) gameObject.maid = new Maid(); // In roblox lua, this maid will still be created even when the class doesn't have it.
-	gameObject.maid.GiveTask(instance.Destroying.Connect(() => component.onDestroy()));
+	if (!instance || !gameObject || !gameObject.maid) return;
+	gameObject.maid.GiveTask(() => component.onDestroy());
 }
 
 function UnsubscribeFromInstanceRemoved(component: OnDestroy) {

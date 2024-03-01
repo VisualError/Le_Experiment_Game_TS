@@ -1,8 +1,7 @@
 import { BaseComponent } from "@flamework/components";
 import Maid from "@rbxts/maid";
-export abstract class GameObject<A = {}, I extends Instance = Instance> extends BaseComponent<A, I> {
-	public maid?: Maid = new Maid();
-
+import { BaseComponentMaid } from "./BaseComponentMaid";
+export abstract class GameObject<A = {}, I extends Instance = Instance> extends BaseComponentMaid<A, I> {
 	/**
 	 * Starts a new coroutine on the object.
 	 * @param callback The function that defines the coroutine.
@@ -52,7 +51,6 @@ export abstract class GameObject<A = {}, I extends Instance = Instance> extends 
 	 */
 	private Clean(): void {
 		try {
-			//this.maid?.Destroy();
 			this.StopCoroutines();
 		} catch (err) {
 			warn(`Failed to call onRemove on ${this.instance.Name}`, err);
