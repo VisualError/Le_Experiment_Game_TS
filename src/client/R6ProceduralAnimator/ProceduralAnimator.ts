@@ -9,11 +9,9 @@ const DOWN = new Vector3(0, -4, 0);
 
 class ProceduralAnimator {
 	RootPart: Part;
-	vector: Vector3;
 	OrientationAngles: CFrame;
-	Humanoid: Humanoid | undefined;
+	Humanoid?: Humanoid;
 	RaycastParams: RaycastParams;
-	yVelocity: number;
 	RootMotor?: Motor6D;
 	RootMotorC1Store?: CFrame;
 	RootMotorC0Store?: CFrame;
@@ -24,10 +22,8 @@ class ProceduralAnimator {
 	DefaultStrideOffset: number;
 	DefaultStrideCF: CFrame;
 	MovementDirectionXZ: Vector3;
-	rootvelm: number;
 	FootStep: Signal<RaycastResult | undefined>;
 	MaxSpeed: number;
-	EngineSound: Sound | undefined;
 	public static footStepSound: Sound = new Instance("Sound");
 	WalkBounce: number;
 	SwayX: number;
@@ -36,11 +32,9 @@ class ProceduralAnimator {
 	constructor(RootPart: Part, Legs: R6Legs, RootMotor?: Motor6D, raycastParams?: RaycastParams) {
 		this.RootPart = RootPart;
 		this.IsMoving = false;
-		this.vector = new Vector3(0, 0, 0);
 		this.OrientationAngles = new CFrame(0, 0, 0);
 		this.Humanoid = this.RootPart.Parent?.FindFirstChildWhichIsA("Humanoid");
 		this.RaycastParams = raycastParams || new RaycastParams();
-		this.yVelocity = 0;
 		if (RootMotor) {
 			this.RootMotor = RootMotor;
 			this.RootMotorC1Store = this.RootMotor.C1;
@@ -59,12 +53,10 @@ class ProceduralAnimator {
 
 		// Variables that will change
 		this.MovementDirectionXZ = new Vector3(1, 0, 1); // This will be changed
-		this.rootvelm = 0;
 
 		// Sound
 		this.FootStep = new Signal<RaycastResult>();
 		this.MaxSpeed = 20;
-		this.EngineSound = undefined;
 		// FootstepModule:CreateSoundGroup(workspace); // Assuming FootstepModule is defined elsewhere
 		this.RandomNumGenerator = new Random();
 
@@ -76,14 +68,10 @@ class ProceduralAnimator {
 		const dt10 = math.min(dt * 10, 1); // Normalize dt for our needs
 		const assemblyVelocity = this.RootPart.AssemblyLinearVelocity;
 		const rootVelocity = assemblyVelocity;
-		this.yVelocity = assemblyVelocity.Y;
 		// Begin the step
 		const rootVelocityMagnitude = rootVelocity.Magnitude;
 
 		this.IsMoving = rootVelocityMagnitude > 0.1;
-		if (this.EngineSound) {
-			this.EngineSound.PlaybackSpeed = rootVelocityMagnitude / this.MaxSpeed + 0.6; // Dunno what this is for.
-		}
 
 		if (this.IsMoving) {
 			this.MovementDirectionXZ = this.MovementDirectionXZ.Lerp(rootVelocity.Unit, dt10);
