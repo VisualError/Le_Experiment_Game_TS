@@ -20,3 +20,11 @@ export interface OnRemove {
 	 */
 	onRemove(): void;
 }
+
+export interface OnTickSingle {
+	onTickSingle(): void;
+}
+
+export interface OnPhysicsSingle {
+	onPhysicsSingle(): void;
+}
