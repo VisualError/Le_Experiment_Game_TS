@@ -31,6 +31,7 @@ class ProceduralAnimator {
 	RandomNumGenerator: Random;
 	IsMoving: boolean;
 	soundFolder: Folder | SoundGroup;
+	Preloaded: boolean;
 	constructor(RootPart: Part, Legs: R6Legs, RootMotor?: Motor6D, raycastParams?: RaycastParams) {
 		this.RootPart = RootPart;
 		this.IsMoving = false;
@@ -64,6 +65,7 @@ class ProceduralAnimator {
 		this.soundFolder = FootstepModule.CreateSoundGroup(Workspace);
 		this.WalkBounce = 0.24; // factor by which it bounces
 		this.SwayX = -1 * 5; // factor in Z direction front or behind, currently set to tilt forward
+		this.Preloaded = false;
 		this.Preload();
 	}
 
@@ -71,6 +73,7 @@ class ProceduralAnimator {
 		print("Starting preloader!");
 		await FootstepModule.PreloadFolder(this.soundFolder);
 		print("Preload sounds!");
+		this.Preloaded = true;
 		return true;
 	}
 
@@ -168,7 +171,7 @@ class ProceduralAnimator {
 
 	ConnectFootStepSound(): void {
 		this.FootStep.Connect((raycastResult: RaycastResult | undefined) => {
-			if (raycastResult === undefined) return;
+			if (raycastResult === undefined || !this.Preloaded) return;
 			const soundPositionAttachment = CreateInstance("Attachment", {
 				WorldPosition: raycastResult.Position,
 				Parent: game.Workspace.Terrain,
