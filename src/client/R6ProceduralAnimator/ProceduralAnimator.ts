@@ -138,12 +138,14 @@ class ProceduralAnimator {
 		const waist1 = this.RootMotorC1Store!;
 		const rootvel = rootVelocity;
 		const raycastResult = Workspace.Raycast(lowercf.Position, DOWN, this.RaycastParams);
+		let V2S: Vector3 | undefined = undefined;
 		if (raycastResult) {
-			const V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
-			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, 0);
+			V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
+			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, V2S.Y - 1);
 		} else {
 			this.OrientationAngles = CFrame.Angles(0, 0, 0);
 		}
+		const val = raycastResult ? raycastResult?.Normal.Y : 0;
 		if (this.IsMoving) {
 			this.WaistCycle = (this.WaistCycle! + stepCycle) % 360;
 			const relv0 = lowercf.VectorToObjectSpace(rootvel);
