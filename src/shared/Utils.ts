@@ -43,3 +43,7 @@ export function hasMethod<T extends object>(
 	}
 	return hasMethod;
 }
+
+export function getComponentAs<T>(component: unknown) {
+	return component as unknown as T;
+}

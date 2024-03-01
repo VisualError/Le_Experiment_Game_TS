@@ -16,6 +16,7 @@ export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestr
 			Position: this.instance.Position,
 			Parent: game.Workspace,
 		});
+		print("component destroyed");
 	}
 	onRemove(): void {
 		this.instance.BrickColor = this.InitialColor;

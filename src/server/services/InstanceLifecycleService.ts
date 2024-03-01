@@ -1,6 +1,7 @@
 import { Service, OnStart, Modding } from "@flamework/core";
 import Maid from "@rbxts/maid";
 import { OnDestroy } from "interfaces/CustomInterfaces";
+import { getComponentAs } from "shared/Utils";
 import { GameObject } from "shared/abstract/GameObject";
 @Service()
 export class InstanceLifecycleService implements OnStart {
@@ -11,7 +12,7 @@ export class InstanceLifecycleService implements OnStart {
 }
 
 function SubscribeToInstanceRemoved(listener: OnDestroy) {
-	const gameObject = listener as unknown as GameObject; // TODO: Find a better way to do this. I don't like how unkown casting looks ;c.
+	const gameObject = getComponentAs<GameObject>(listener);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject) return;
 	if (!gameObject.maid) gameObject.maid = new Maid(); // In roblox lua, this maid will still be created even when the class doesn't have it.
@@ -19,7 +20,7 @@ function SubscribeToInstanceRemoved(listener: OnDestroy) {
 }
 
 function UnsubscribeFromInstanceRemoved(listener: OnDestroy) {
-	const gameObject = listener as unknown as GameObject; // TODO: Find a better way to do this. I don't like how unkown casting looks ;c.
+	const gameObject = getComponentAs<GameObject>(listener);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject || !gameObject.maid) return; // If maid doesn't exist. Then this component has already been disposed of.
 	gameObject.maid.Destroy();

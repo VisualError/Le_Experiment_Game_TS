@@ -1,19 +1,19 @@
 import { BaseComponent, Component } from "@flamework/components";
+import { OnStart } from "@flamework/core";
 import { OnRemove } from "interfaces/CustomInterfaces";
-import { GameObject } from "shared/abstract/GameObject";
 
 interface TestAttributes {
-	test: string;
+	test?: string;
 }
 
 @Component({
 	tag: "test.component",
-	defaults: {
-		test: "hi",
-	},
 })
-export class TestComponent extends BaseComponent<TestAttributes, Part> implements OnRemove {
+export class TestComponent extends BaseComponent<TestAttributes, Part> implements OnRemove, OnStart {
+	onStart(): void {
+		this.attributes.test = "test";
+	}
 	onRemove(): void {
-		print("remove");
+		this.attributes.test = undefined;
 	}
 }
