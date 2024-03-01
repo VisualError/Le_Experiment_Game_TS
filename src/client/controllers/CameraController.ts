@@ -1,5 +1,4 @@
 import { Controller, OnStart } from "@flamework/core";
-import Maid from "@rbxts/maid";
 import { Players, RunService, Workspace, UserInputService } from "@rbxts/services";
 import Spring from "@rbxts/spring";
 import { EventController } from "./EventController";
@@ -43,7 +42,9 @@ class ModelPositionProvider implements PositionProvider {
 		return this.model.PrimaryPart?.AssemblyLinearVelocity || new Vector3();
 	}
 }
-
+// TODO: Add support for first person mode.
+// TODO: Add support for different input types.
+// TODO: Make left and right arrow keys to work.
 @Controller()
 export class CameraController implements OnStart {
 	spring?: Spring<Vector3>;
