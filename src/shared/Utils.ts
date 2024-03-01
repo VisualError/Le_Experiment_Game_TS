@@ -5,7 +5,7 @@ import { FunctionConfiguration } from "@flamework/networking/out/functions/types
 
 export function CreateInstance<T extends keyof CreatableInstances>(
 	className: T,
-	props: InstanceProperties[T],
+	props?: InstanceProperties[T],
 ): CreatableInstances[T] {
 	const newInstance = new Instance(className);
 	// Here, you should pass the instance to Assign, not the class name
@@ -15,7 +15,8 @@ export function CreateInstance<T extends keyof CreatableInstances>(
 
 // The Assign function should take an instance of a class that extends Instance,
 // not a type parameter that extends keyof CreatableInstances.
-export function Assign<T extends Instance>(instance: T, props: Partial<WritableInstanceProperties<T>>): T {
+export function Assign<T extends Instance>(instance: T, props?: Partial<WritableInstanceProperties<T>>): T {
+	if (props === undefined) return instance;
 	for (const [k, v] of Object.entries(props)) {
 		instance[k as never] = v as never;
 	}
