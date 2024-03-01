@@ -1,7 +1,7 @@
 import { BaseComponent } from "@flamework/components";
 import Maid from "@rbxts/maid";
 export abstract class GameObject<A = {}, I extends Instance = Instance> extends BaseComponent<A, I> {
-	maid?: Maid;
+	public maid?: Maid = new Maid();
 
 	/**
 	 * Starts a new coroutine on the object.
