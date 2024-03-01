@@ -52,7 +52,7 @@ export abstract class GameObject<A = {}, I extends Instance = Instance> extends 
 	 */
 	private Clean(): void {
 		try {
-			this.maid?.Destroy();
+			//this.maid?.Destroy();
 			this.StopCoroutines();
 		} catch (err) {
 			warn(`Failed to call onRemove on ${this.instance.Name}`, err);

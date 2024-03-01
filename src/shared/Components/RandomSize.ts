@@ -7,6 +7,7 @@ const TweenService = game.GetService("TweenService");
 interface TestAttributes {
 	maxSize: number;
 	minSize: number;
+	initialSize: Vector3;
 }
 
 @Component({
@@ -14,20 +15,18 @@ interface TestAttributes {
 	defaults: {
 		maxSize: 10,
 		minSize: 1,
+		initialSize: new Vector3(),
 	},
 })
 export class RandomColor extends GameObject<TestAttributes, Part> implements OnPhysics, OnStart, OnRemove {
-	constructor() {
-		super();
-		this.InitialSize = this.instance.Size;
-	}
 	onStart(): void {
 		this.attributes.maxSize = math.random(1, 20);
+		this.attributes.initialSize = this.instance.Size;
 	}
 	onRemove(): void {
 		this.CurrentTween?.Cancel();
 		this.CurrentTween = TweenService.Create(this.instance, this.newTweenInfo!, {
-			Size: this.InitialSize,
+			Size: this.attributes.initialSize,
 		});
 		this.CurrentTween.Play();
 		this.CurrentTween.Completed.Connect(() => {
@@ -50,8 +49,6 @@ export class RandomColor extends GameObject<TestAttributes, Part> implements OnP
 		});
 		this.CurrentTween.Play();
 	}
-
-	InitialSize: Vector3;
 	CurrentTween?: Tween;
 	newTweenInfo? = new TweenInfo(
 		1, // Duration of the tween
