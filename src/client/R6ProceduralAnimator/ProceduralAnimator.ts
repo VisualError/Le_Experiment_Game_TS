@@ -5,8 +5,6 @@ import { Players, Workspace } from "@rbxts/services";
 //Module to handle the procedural animation the hip and legs
 //remnants from iGottics Code
 const ANGLES = CFrame.Angles;
-const x_and_z = new Vector3(1, 0, 1);
-const TAU = 2 * math.pi;
 const DOWN = new Vector3(0, -4, 0);
 
 class ProceduralAnimator {
@@ -14,8 +12,6 @@ class ProceduralAnimator {
 	vector: Vector3;
 	OrientationAngles: CFrame;
 	Humanoid: Humanoid | undefined;
-	lookVector: Vector3;
-	PreviouslookVector: Vector3;
 	RaycastParams: RaycastParams;
 	yVelocity: number;
 	RootMotor?: Motor6D;
@@ -43,8 +39,6 @@ class ProceduralAnimator {
 		this.vector = new Vector3(0, 0, 0);
 		this.OrientationAngles = new CFrame(0, 0, 0);
 		this.Humanoid = this.RootPart.Parent?.FindFirstChildWhichIsA("Humanoid");
-		this.lookVector = this.RootPart.CFrame.LookVector;
-		this.PreviouslookVector = this.lookVector.Unit;
 		this.RaycastParams = raycastParams || new RaycastParams();
 		this.yVelocity = 0;
 		if (RootMotor) {
@@ -83,7 +77,6 @@ class ProceduralAnimator {
 		const assemblyVelocity = this.RootPart.AssemblyLinearVelocity;
 		const rootVelocity = assemblyVelocity;
 		this.yVelocity = assemblyVelocity.Y;
-		this.lookVector = this.RootPart.CFrame.LookVector;
 		// Begin the step
 		const rootVelocityMagnitude = rootVelocity.Magnitude;
 
@@ -108,9 +101,6 @@ class ProceduralAnimator {
 		for (const [_, Leg] of pairs(this.Legs)) {
 			const strideCF = this.DefaultStrideCF;
 			const strideOffset = this.DefaultStrideOffset;
-			const lookVector = this.lookVector;
-			const angle = math.atan2(lookVector.X, lookVector.Z);
-			const rad = math.deg(angle);
 			const raycastParams = this.RaycastParams;
 			if (this.IsMoving || this.Humanoid?.FloorMaterial === Enum.Material.Air) {
 				Leg.CurrentCycle = (Leg.CurrentCycle + stepCycle) % 360;
@@ -147,7 +137,7 @@ class ProceduralAnimator {
 		const waistjoint = this.RootMotor!;
 		const waist1 = this.RootMotorC1Store!;
 		const rootvel = rootVelocity;
-		const raycastResult = Workspace.Raycast(lowercf.Position, new Vector3(0, -100, 0), this.RaycastParams);
+		const raycastResult = Workspace.Raycast(lowercf.Position, DOWN, this.RaycastParams);
 		if (raycastResult) {
 			const V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
 			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, 0);
