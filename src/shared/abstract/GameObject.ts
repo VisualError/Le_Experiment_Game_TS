@@ -1,25 +1,7 @@
 import { BaseComponent } from "@flamework/components";
 import Maid from "@rbxts/maid";
-import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
-import { hasMethod } from "shared/Utils";
-export abstract class GameObject<A, I extends Instance> extends BaseComponent<A, I> {
-	private maid?: Maid;
-
-	constructor() {
-		super();
-		if (hasMethod(this, "onDestroy") || hasMethod(this, "onRemove")) {
-			if (!this.maid) this.maid = new Maid();
-		} else {
-			return;
-		}
-
-		hasMethod<OnRemove>(this, "onRemove", (value) => {
-			this.maid?.GiveTask(() => value.onRemove());
-		});
-		hasMethod<OnDestroy>(this, "onDestroy", (value) => {
-			this.maid?.GiveTask(this.instance.Destroying.Connect(() => value.onDestroy()));
-		});
-	}
+export abstract class GameObject<A = {}, I extends Instance = Instance> extends BaseComponent<A, I> {
+	maid?: Maid;
 
 	/**
 	 * Starts a new coroutine on the object.

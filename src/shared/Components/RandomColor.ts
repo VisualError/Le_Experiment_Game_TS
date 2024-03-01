@@ -12,10 +12,6 @@ export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestr
 		this.InitialColor = this.instance.BrickColor;
 	}
 	onDestroy(): void {
-		Assign(this.instance.Clone(), {
-			Parent: game.Workspace,
-			Size: this.instance.Size.mul(2),
-		});
 		CreateInstance("Explosion", {
 			Position: this.instance.Position,
 			Parent: game.Workspace,
@@ -23,6 +19,7 @@ export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestr
 	}
 	onRemove(): void {
 		this.instance.BrickColor = this.InitialColor;
+		print("component removed");
 	}
 	private lastFrame = 0;
 	onTick(dt: number): void {

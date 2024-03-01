@@ -1,12 +1,12 @@
 import { Component } from "@flamework/components";
 import { OnStart, OnTick } from "@flamework/core";
-import { OnDestroy } from "interfaces/CustomInterfaces";
+import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
 import { Assign } from "shared/Utils";
 import { GameObject } from "shared/abstract/GameObject";
 @Component({
 	tag: "random.transparency",
 })
-export class RandomTransparency extends GameObject<{}, Part> implements OnTick, OnStart, OnDestroy {
+export class RandomTransparency extends GameObject<{}, Part> implements OnTick, OnStart, OnDestroy, OnRemove {
 	constructor() {
 		super();
 		this.InitialTransparency = this.instance.Transparency;
@@ -25,7 +25,7 @@ export class RandomTransparency extends GameObject<{}, Part> implements OnTick, 
 			Parent: game.Workspace,
 		});
 	}
-	protected onRemove(): void {
+	onRemove(): void {
 		this.instance.Transparency = this.InitialTransparency;
 	}
 	private lastFrame = 0;

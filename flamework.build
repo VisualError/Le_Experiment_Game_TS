@@ -18,7 +18,10 @@
 		"le_experiment_game_ts:out/shared/components/RandomSize@RandomColor": "n6",
 		"le_experiment_game_ts:out/shared/components/RandomTransparency@RandomTransparency": "WE",
 		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnDestroy": "R4",
-		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnRemove": "Kr"
+		"le_experiment_game_ts:out/interfaces/CustomInterfaces@OnRemove": "Kr",
+		"le_experiment_game_ts:out/server/services/InstanceLifecycleService@EnemyService": "server/services/InstanceLifecycleService@EnemyService",
+		"le_experiment_game_ts:out/server/services/InstanceLifecycleService@InstanceLifecycleService": "server/services/InstanceLifecycleService@InstanceLifecycleService",
+		"le_experiment_game_ts:out/server/services/CustomComponentLifecycleServices@CustomComponentLifecycleServices": "server/services/CustomComponentLifecycleServices@CustomComponentLifecycleServices"
 	},
 	"metadata": {},
 	"salt": "9e833f02f7cf321779413874d367d8948994cea6c0746aea0c2a850178c775b8fcd4d2c58b16a77b056f09b82ab22c94c8d9ec8ae2a3e735fe5b0ceb167c2bda"

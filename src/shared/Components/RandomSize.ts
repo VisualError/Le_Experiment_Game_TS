@@ -1,6 +1,6 @@
 import { Component } from "@flamework/components";
 import { OnPhysics, OnStart } from "@flamework/core";
-import { OnDestroy } from "interfaces/CustomInterfaces";
+import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
 import { GameObject } from "shared/abstract/GameObject";
 const TweenService = game.GetService("TweenService");
 
@@ -16,7 +16,7 @@ interface TestAttributes {
 		minSize: 1,
 	},
 })
-export class RandomColor extends GameObject<TestAttributes, Part> implements OnPhysics, OnStart {
+export class RandomColor extends GameObject<TestAttributes, Part> implements OnPhysics, OnStart, OnRemove {
 	constructor() {
 		super();
 		this.InitialSize = this.instance.Size;
@@ -24,7 +24,7 @@ export class RandomColor extends GameObject<TestAttributes, Part> implements OnP
 	onStart(): void {
 		this.attributes.maxSize = math.random(1, 20);
 	}
-	protected onRemove(): void {
+	onRemove(): void {
 		this.CurrentTween?.Cancel();
 		this.CurrentTween = TweenService.Create(this.instance, this.newTweenInfo!, {
 			Size: this.InitialSize,
