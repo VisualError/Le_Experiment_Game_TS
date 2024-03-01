@@ -11,16 +11,16 @@ export class InstanceLifecycleService implements OnStart {
 	}
 }
 
-function SubscribeToInstanceRemoved(listener: OnDestroy) {
-	const gameObject = getComponentAs<GameObject>(listener);
+function SubscribeToInstanceRemoved(component: OnDestroy) {
+	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject) return;
 	if (!gameObject.maid) gameObject.maid = new Maid(); // In roblox lua, this maid will still be created even when the class doesn't have it.
-	gameObject.maid.GiveTask(instance.Destroying.Connect(() => listener.onDestroy()));
+	gameObject.maid.GiveTask(instance.Destroying.Connect(() => component.onDestroy()));
 }
 
-function UnsubscribeFromInstanceRemoved(listener: OnDestroy) {
-	const gameObject = getComponentAs<GameObject>(listener);
+function UnsubscribeFromInstanceRemoved(component: OnDestroy) {
+	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject || !gameObject.maid) return; // If maid doesn't exist. Then this component has already been disposed of.
 	gameObject.maid.Destroy();

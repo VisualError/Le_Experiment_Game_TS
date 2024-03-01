@@ -11,16 +11,16 @@ export class CustomComponentLifecycleServices implements OnStart {
 	}
 }
 
-function Subscribe(listener: OnRemove) {
-	const gameObject = getComponentAs<GameObject>(listener);
+function Subscribe(component: OnRemove) {
+	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject) return;
 	if (!gameObject.maid) gameObject.maid = new Maid(); // In roblox lua, this maid will still be created even when the class doesn't have it.
-	gameObject.maid.GiveTask(() => listener.onRemove());
+	gameObject.maid.GiveTask(() => component.onRemove());
 }
 
-function Unsubscribe(listener: OnRemove) {
-	const gameObject = getComponentAs<GameObject>(listener);
+function Unsubscribe(component: OnRemove) {
+	const gameObject = getComponentAs<GameObject>(component);
 	const instance = gameObject.instance;
 	if (!instance || !gameObject || !gameObject.maid) return; // If maid doesn't exist. Then this component has already been disposed of.
 	gameObject.maid.Destroy();
