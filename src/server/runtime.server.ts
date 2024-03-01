@@ -9,7 +9,7 @@ Flamework.ignite();
 
 // Funny
 task.wait(1);
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 4000; i++) {
 	const sphere = CreateInstance("Part", {
 		Shape: Enum.PartType.Wedge,
 		Size: new Vector3(1, 1, 1),
@@ -20,7 +20,7 @@ for (let i = 0; i < 10; i++) {
 		CanQuery: false,
 		CastShadow: false,
 	});
-	sphere.AddTag("random.color");
+	sphere.AddTag("random.size");
 }
 
 Players.PlayerAdded.Connect(function (Player: Player) {

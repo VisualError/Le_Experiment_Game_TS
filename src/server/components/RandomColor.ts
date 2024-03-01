@@ -1,12 +1,12 @@
 import { Component } from "@flamework/components";
 import { OnTick } from "@flamework/core";
-import { OnDestroy, OnRemove } from "interfaces/CustomInterfaces";
+import { OnDestroy, OnRemove, OnTickSingle } from "interfaces/CustomInterfaces";
 import { Assign, CreateInstance } from "shared/Utils";
 import { GameObject } from "shared/abstract/GameObject";
 @Component({
 	tag: "random.color",
 })
-export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestroy, OnRemove {
+export class RandomColor extends GameObject<{}, Part> implements OnTickSingle, OnDestroy, OnRemove {
 	constructor() {
 		super();
 		this.InitialColor = this.instance.BrickColor;
@@ -21,7 +21,7 @@ export class RandomColor extends GameObject<{}, Part> implements OnTick, OnDestr
 		this.instance.BrickColor = this.InitialColor;
 	}
 	private lastFrame = 0;
-	onTick(dt: number): void {
+	onTickSingle(dt: number): void {
 		this.lastFrame += dt;
 		if (this.lastFrame < 2) return;
 		this.instance.BrickColor = BrickColor.random();

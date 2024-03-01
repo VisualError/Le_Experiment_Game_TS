@@ -22,9 +22,9 @@ export interface OnRemove {
 }
 
 export interface OnTickSingle {
-	onTickSingle(): void;
+	onTickSingle(dt: number): void;
 }
 
 export interface OnPhysicsSingle {
-	onPhysicsSingle(): void;
+	onPhysicsSingle(dt: number): void;
 }

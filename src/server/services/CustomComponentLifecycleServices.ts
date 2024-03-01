@@ -1,8 +1,11 @@
 import { Service, OnStart, Modding } from "@flamework/core";
 import Maid from "@rbxts/maid";
+import { RunService } from "@rbxts/services";
 import { OnPhysicsSingle, OnRemove, OnTickSingle } from "interfaces/CustomInterfaces";
 import { getComponentAs } from "shared/Utils";
 import { GameObject } from "shared/abstract/GameObject";
+const TickSingle = new Set<OnTickSingle>();
+const PhysicsSingle = new Set<OnPhysicsSingle>();
 @Service()
 export class CustomComponentLifecycleServices implements OnStart {
 	onStart() {
@@ -14,28 +17,31 @@ export class CustomComponentLifecycleServices implements OnStart {
 
 		Modding.onListenerAdded<OnPhysicsSingle>(SubscribePhysicsSingle);
 		Modding.onListenerRemoved<OnPhysicsSingle>(UnsubscribePhysicsSingle);
+
+		RunService.Heartbeat.Connect((dt) => {
+			TickSingle.forEach((func) => func.onTickSingle(dt));
+		});
+		RunService.PreSimulation.Connect((dt) => {
+			PhysicsSingle.forEach((func) => func.onPhysicsSingle(dt));
+		});
 	}
 }
 
 //#region OnPhysicsSingle
 function SubscribePhysicsSingle(component: OnPhysicsSingle): void {
-	const gameObject = getComponentAs<GameObject>(component);
-	const instance = gameObject.instance;
+	PhysicsSingle.add(component);
 }
 function UnsubscribePhysicsSingle(component: OnPhysicsSingle): void {
-	const gameObject = getComponentAs<GameObject>(component);
-	const instance = gameObject.instance;
+	PhysicsSingle.delete(component);
 }
 //#endregion
 
 //#region OnTickSingle
 function SubscribeTickSingle(component: OnTickSingle): void {
-	const gameObject = getComponentAs<GameObject>(component);
-	const instance = gameObject.instance;
+	TickSingle.add(component);
 }
 function UnsubscribeTickSingle(component: OnTickSingle): void {
-	const gameObject = getComponentAs<GameObject>(component);
-	const instance = gameObject.instance;
+	TickSingle.delete(component);
 }
 //#endregion
 
