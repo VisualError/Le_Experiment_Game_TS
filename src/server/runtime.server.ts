@@ -9,7 +9,7 @@ Flamework.ignite();
 
 // Funny
 task.wait(1);
-for (let i = 0; i < 4000; i++) {
+for (let i = 0; i < 4; i++) {
 	const sphere = CreateInstance("Part", {
 		Shape: Enum.PartType.Wedge,
 		Size: new Vector3(1, 1, 1),

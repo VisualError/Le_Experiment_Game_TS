@@ -44,16 +44,16 @@ class ModelPositionProvider implements PositionProvider {
 }
 // TODO: Add support for first person mode.
 // TODO: Add support for different input types.
-// TODO: Make left and right arrow keys to work.
 @Controller()
 export class CameraController implements OnStart {
 	spring?: Spring<Vector3>;
-	isRightMouseDown = false; // Track if the right mouse button is down
 	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
 	private static dampening = 6;
 	private accumulatedHorizontalAngle = 0;
+	private static isLeftHeld = false;
+	private static isRightHeld = false;
 	private accumulatedVerticalAngle = 0;
 	private currentIndex = 0;
 	private static minDistance = 2;
@@ -69,7 +69,6 @@ export class CameraController implements OnStart {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
 				if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-					this.isRightMouseDown = true; // Right mouse button is down
 					this.oldMousePos = input.Position;
 				}
 				if (input.UserInputType === Enum.UserInputType.Keyboard) {
@@ -107,6 +106,12 @@ export class CameraController implements OnStart {
 							CameraController.dampening--;
 							print(CameraController.dampening);
 							break;
+						case Enum.KeyCode.Left:
+							CameraController.isLeftHeld = true;
+							break;
+						case Enum.KeyCode.Right:
+							CameraController.isRightHeld = true;
+							break;
 					}
 				}
 			}),
@@ -117,8 +122,17 @@ export class CameraController implements OnStart {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
 				if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-					this.isRightMouseDown = false; // Right mouse button is up
 					this.oldMousePos = undefined;
+				}
+				if (input.UserInputType === Enum.UserInputType.Keyboard) {
+					switch (input.KeyCode) {
+						case Enum.KeyCode.Left:
+							CameraController.isLeftHeld = false;
+							break;
+						case Enum.KeyCode.Right:
+							CameraController.isRightHeld = false;
+							break;
+					}
 				}
 			}),
 		);
@@ -209,6 +223,14 @@ export class CameraController implements OnStart {
 			const targetPosition = CameraController.target.getCFrame().Position;
 			const targetRotation = CameraController.target.getCFrame().Rotation; // Not using this yet..
 			// Calculate the camera's rotation based on the accumalated angles.
+
+			if (CameraController.isLeftHeld) {
+				this.accumulatedHorizontalAngle -= 2;
+			}
+			if (CameraController.isRightHeld) {
+				this.accumulatedHorizontalAngle += 2;
+			}
+
 			const rotationCFrame = new CFrame()
 				.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
