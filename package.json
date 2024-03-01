@@ -23,8 +23,8 @@
     "eslint-plugin-roblox-ts": "^0.0.36",
     "prettier": "^3.2.5",
     "rbxts-transformer-flamework": "^1.1.1",
-    "roblox-ts": "^2.3.0-dev-3a713b2",
-    "typescript": "^5.3.3"
+    "roblox-ts": "^2.3.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "@flamework/components": "^1.1.1",
