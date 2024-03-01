@@ -160,8 +160,8 @@ export class CameraController implements OnStart {
 							if (CameraController.target) {
 								// Accumulate the rotation angles
 								const mouseSensitivity = UserSettings().GetService("UserGameSettings").MouseSensitivity;
-								this.accumulatedHorizontalAngle += delta.X * mouseSensitivity;
-								this.accumulatedVerticalAngle += delta.Y * mouseSensitivity;
+								this.accumulatedHorizontalAngle += delta.X * mouseSensitivity * 0.5;
+								this.accumulatedVerticalAngle += delta.Y * mouseSensitivity * 0.5;
 
 								// Clamp the accumulated vertical angle to prevent the camera from turning upside down
 								// This example clamps the vertical angle between -80 and 80 degrees
@@ -178,6 +178,7 @@ export class CameraController implements OnStart {
 				CameraController.setTarget(character);
 			}),
 		);
+		CameraController.setTarget(Players.LocalPlayer.Character);
 	}
 
 	static setTarget<T extends Instance>(this: void, target_?: T): boolean {
@@ -219,57 +220,59 @@ export class CameraController implements OnStart {
 
 	// TODO: Separate springs for camera rotation/camera position.
 	Connection(dt: number): void {
-		if (CameraController.target) {
-			const targetPosition = CameraController.target.getCFrame().Position;
-			const targetRotation = CameraController.target.getCFrame().Rotation; // Not using this yet..
-			// Calculate the camera's rotation based on the accumalated angles.
+		if (!CameraController.target) {
+			//CameraController.setTarget(Players.LocalPlayer.Character);
+			return;
+		}
+		const targetPosition = CameraController.target.getCFrame().Position;
+		const targetRotation = CameraController.target.getCFrame().Rotation; // Not using this yet..
+		// Calculate the camera's rotation based on the accumalated angles.
 
-			if (CameraController.isLeftHeld) {
-				this.accumulatedHorizontalAngle -= 2;
+		if (CameraController.isLeftHeld) {
+			this.accumulatedHorizontalAngle -= 2;
+		}
+		if (CameraController.isRightHeld) {
+			this.accumulatedHorizontalAngle += 2;
+		}
+
+		const rotationCFrame = new CFrame()
+			.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
+			.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
+		let goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
+		if (Workspace.CurrentCamera) {
+			const params = new RaycastParams();
+			params.FilterType = Enum.RaycastFilterType.Exclude;
+			params.AddToFilter(CameraController.target.instance);
+			//params.AddToFilter(Players.LocalPlayer.Character!);
+
+			const result = game.Workspace.Raycast(targetPosition, goal.sub(targetPosition), params);
+
+			// If a part is hit, adjust the goal position to stop before the part
+			if (result && result.Instance) {
+				const hitPosition = result.Position;
+				const directionToGoal = goal.sub(targetPosition).Unit;
+				const distanceToHit = hitPosition.sub(targetPosition).Magnitude;
+				goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.8)); // The 0.8 is here coz it clips and idk why.
 			}
-			if (CameraController.isRightHeld) {
-				this.accumulatedHorizontalAngle += 2;
-			}
+		}
+		if (!this.spring) this.spring = new Spring(targetPosition, 50, goal, CameraController.dampening);
+		this.spring.goal = goal;
+		this.spring.dampingRatio = CameraController.dampening;
+		if (this.spring.dampingRatio > 0) {
+			this.spring.update(dt);
+		} else {
+			if (this.spring.position !== this.spring.goal) this.spring.resetToPosition(this.spring.goal);
+		}
 
-			const rotationCFrame = new CFrame()
-				.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
-				.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
-			let goal = targetPosition.add(rotationCFrame.mul(new CFrame(this.cameraOffset)).Position);
-			if (Workspace.CurrentCamera) {
-				const params = new RaycastParams();
-				params.FilterType = Enum.RaycastFilterType.Exclude;
-				params.AddToFilter(CameraController.target.instance);
-				//params.AddToFilter(Players.LocalPlayer.Character!);
+		if (Workspace.CurrentCamera) {
+			Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
+			// Calculate the rotation CFrame based on the accumulated rotation angles
+			// Apply the rotation CFrame to the camera's position
+			const springToggle = this.spring.dampingRatio > 0 ? this.spring.position : goal;
+			const finalPosition = rotationCFrame.add(springToggle);
+			// Apply the rotation CFrame to the new camera position
 
-				const result = game.Workspace.Raycast(targetPosition, goal.sub(targetPosition), params);
-
-				// If a part is hit, adjust the goal position to stop before the part
-				if (result && result.Instance) {
-					const hitPosition = result.Position;
-					const directionToGoal = goal.sub(targetPosition).Unit;
-					const distanceToHit = hitPosition.sub(targetPosition).Magnitude;
-					goal = targetPosition.add(directionToGoal.mul(distanceToHit * 0.8)); // The 0.8 is here coz it clips and idk why.
-				}
-			}
-			if (!this.spring) this.spring = new Spring(targetPosition, 50, goal, CameraController.dampening);
-			this.spring.goal = goal;
-			this.spring.dampingRatio = CameraController.dampening;
-			if (this.spring.dampingRatio > 0) {
-				this.spring.update(dt);
-			} else {
-				if (this.spring.position !== this.spring.goal) this.spring.resetToPosition(this.spring.goal);
-			}
-
-			if (Workspace.CurrentCamera) {
-				Workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable;
-				// Calculate the rotation CFrame based on the accumulated rotation angles
-				// Apply the rotation CFrame to the camera's position
-				const springToggle = this.spring.dampingRatio > 0 ? this.spring.position : goal;
-				const finalPosition = rotationCFrame.add(springToggle);
-				// Apply the rotation CFrame to the new camera position
-
-				Workspace.CurrentCamera.CFrame = finalPosition;
-			}
+			Workspace.CurrentCamera.CFrame = finalPosition;
 		}
 	}
 }
