@@ -2,6 +2,7 @@ import { Flamework } from "@flamework/core";
 import { Players } from "@rbxts/services";
 import { CreateInstance } from "shared/Utils";
 
+Flamework.addPaths("src/server/components");
 Flamework.addPaths("src/shared/components");
 Flamework.addPaths("src/server/services");
 Flamework.ignite();
