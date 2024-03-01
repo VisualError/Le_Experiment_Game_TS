@@ -120,6 +120,7 @@ class ProceduralAnimator {
 		}
 	}
 
+	// TODO: Fix position not being set properly when rotating to the floors normal vector.
 	MoveTorso(stepCycle: number, dt10: number, rootVelocity: Vector3) {
 		const lowercf = this.RootPart.CFrame;
 		const waistjoint = this.RootMotor!;
