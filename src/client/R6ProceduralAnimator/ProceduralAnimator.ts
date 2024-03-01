@@ -2,6 +2,7 @@ import { Signal } from "@rbxts/beacon";
 import { CreateInstance } from "shared/Utils";
 import { R6Legs } from "./FakeLegs";
 import { Players, Workspace } from "@rbxts/services";
+import FootstepModule from "client/lua/FootstepModule";
 //Module to handle the procedural animation the hip and legs
 //remnants from iGottics Code
 const ANGLES = CFrame.Angles;
@@ -29,6 +30,7 @@ class ProceduralAnimator {
 	SwayX: number;
 	RandomNumGenerator: Random;
 	IsMoving: boolean;
+	soundFolder: Folder | SoundGroup;
 	constructor(RootPart: Part, Legs: R6Legs, RootMotor?: Motor6D, raycastParams?: RaycastParams) {
 		this.RootPart = RootPart;
 		this.IsMoving = false;
@@ -57,11 +59,19 @@ class ProceduralAnimator {
 		// Sound
 		this.FootStep = new Signal<RaycastResult>();
 		this.MaxSpeed = 20;
-		// FootstepModule:CreateSoundGroup(workspace); // Assuming FootstepModule is defined elsewhere
-		this.RandomNumGenerator = new Random();
 
+		this.RandomNumGenerator = new Random();
+		this.soundFolder = FootstepModule.CreateSoundGroup(Workspace);
 		this.WalkBounce = 0.24; // factor by which it bounces
 		this.SwayX = -1 * 5; // factor in Z direction front or behind, currently set to tilt forward
+		this.Preload();
+	}
+
+	async Preload(): Promise<boolean> {
+		print("Starting preloader!");
+		await FootstepModule.PreloadFolder(this.soundFolder);
+		print("Preload sounds!");
+		return true;
 	}
 
 	Animate(dt: number): void {
@@ -164,9 +174,12 @@ class ProceduralAnimator {
 				Parent: game.Workspace.Terrain,
 			});
 			const sound = ProceduralAnimator.footStepSound.Clone();
+			const materialTable = FootstepModule.GetTableFromMaterial(this.Humanoid!.FloorMaterial);
+			let randomSound = sound.SoundId;
+			if (materialTable) randomSound = FootstepModule.GetRandomSound(materialTable);
 			const randomPlaybackSpeed = this.RandomNumGenerator.NextNumber(0.9, 1.1);
 			sound.PlaybackSpeed = randomPlaybackSpeed;
-			//footStepSound.SoundId = footStepSound.SoundId;
+			sound.SoundId = randomSound ?? sound.SoundId;
 			sound.PlayOnRemove = true;
 			sound.Parent = soundPositionAttachment;
 			soundPositionAttachment.Destroy();
