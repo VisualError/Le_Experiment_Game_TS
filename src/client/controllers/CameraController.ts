@@ -229,10 +229,10 @@ export class CameraController implements OnStart {
 		// Calculate the camera's rotation based on the accumalated angles.
 
 		if (CameraController.isLeftHeld) {
-			this.accumulatedHorizontalAngle -= 2;
+			this.accumulatedHorizontalAngle -= 200 * dt;
 		}
 		if (CameraController.isRightHeld) {
-			this.accumulatedHorizontalAngle += 2;
+			this.accumulatedHorizontalAngle += 200 * dt;
 		}
 
 		const rotationCFrame = new CFrame()
