@@ -62,6 +62,7 @@ export class CameraController implements OnStart {
 	constructor(private eventController: EventController) {}
 
 	onStart(): void {
+		print("Camera Controller has started!");
 		this.eventController.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
 		// Listen for right-click to start orbiting
 		this.eventController.maid.GiveTask(
