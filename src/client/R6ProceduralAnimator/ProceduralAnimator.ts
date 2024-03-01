@@ -1,6 +1,7 @@
 import { Signal } from "@rbxts/beacon";
 import { CreateInstance } from "shared/Utils";
 import { R6Legs } from "./FakeLegs";
+import { Players, Workspace } from "@rbxts/services";
 //Module to handle the procedural animation the hip and legs
 //remnants from iGottics Code
 const ANGLES = CFrame.Angles;
@@ -120,7 +121,6 @@ class ProceduralAnimator {
 			const IKTolerance = 0;
 			const hipPosition = Leg.HipAttachment.WorldPosition;
 			const ground = Leg.FootAttachment.WorldPosition;
-
 			const desiredPosition = new CFrame(ground, ground.add(this.MovementDirectionXZ))
 				.mul(ANGLES(-cycle, 0, 0))
 				.mul(strideCF).Position;
@@ -130,7 +130,9 @@ class ProceduralAnimator {
 				offset.Unit.mul(offset.Magnitude + strideOffset),
 				raycastParams,
 			);
-			const targetPos = hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
+			const targetPos = raycastResult
+				? raycastResult.Position
+				: hipPosition.add(offset.Unit.mul(offset.Magnitude + strideOffset));
 			const footPos = targetPos;
 			Leg.CCDIKController.CCDIKIterateOnce(footPos, IKTolerance);
 			if (!Leg.TouchedGround && raycastResult) {
@@ -145,6 +147,13 @@ class ProceduralAnimator {
 		const waistjoint = this.RootMotor!;
 		const waist1 = this.RootMotorC1Store!;
 		const rootvel = rootVelocity;
+		const raycastResult = Workspace.Raycast(lowercf.Position, new Vector3(0, -100, 0), this.RaycastParams);
+		if (raycastResult) {
+			const V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
+			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, 0);
+		} else {
+			this.OrientationAngles = CFrame.Angles(0, 0, 0);
+		}
 		if (this.IsMoving) {
 			this.WaistCycle = (this.WaistCycle! + stepCycle) % 360;
 			const relv0 = lowercf.VectorToObjectSpace(rootvel);
@@ -157,9 +166,11 @@ class ProceduralAnimator {
 			const goalCF = bounceCFrame.mul(
 				waist1.mul(ANGLES(swayX, swayY, sway).Inverse().mul(this.OrientationAngles)),
 			);
+			// Apply the desired orientation to the goalCF
+			//goalCF = goalCF.mul(surfaceNormal.Rotation);
 			waistjoint.C1 = waistjoint.C1.Lerp(goalCF, dt10);
 		} else {
-			const goalCF = waistjoint?.C1.Lerp(waist1.mul(this.OrientationAngles), dt10);
+			const goalCF = waistjoint.C1.Lerp(waist1.mul(this.OrientationAngles), dt10);
 			waistjoint.C1 = goalCF;
 		}
 	}

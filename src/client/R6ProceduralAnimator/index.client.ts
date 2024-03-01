@@ -214,7 +214,7 @@ function giveCharacterIK(character: Model) {
 	runSound.Volume = 0;
 	animator.ConnectFootStepSound();
 	// Begin Animation.
-	const animationConnection = RunService.Heartbeat.Connect(function (dt) {
+	const animationConnection = RunService.PreSimulation.Connect(function (dt) {
 		animator.Animate(dt);
 	});
 
