@@ -23,7 +23,7 @@ export class GrabbableObjectServer extends GameObject<{}, Part> implements OnSta
 	HandleClicks(player: Player): void {
 		const Tool = CreateInstance("Tool", { Parent: Workspace });
 		const corner = this.instance.CFrame.mul(new CFrame(this.instance.Size.mul(0.5)));
-		const edge = corner.Position.div(new Vector3(2, 2, 1));
+		const edge = corner.Rotation.mul(corner.Position.div(new Vector3(2, 2, 1)));
 		const Handle = CreateInstance("Part", {
 			Parent: Tool,
 			Name: "Handle",
