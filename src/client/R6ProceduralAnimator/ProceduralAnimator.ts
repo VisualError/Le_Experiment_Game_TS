@@ -143,7 +143,7 @@ class ProceduralAnimator {
 		let V2S: Vector3 | undefined = undefined;
 		if (raycastResult) {
 			V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
-			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, V2S.Y - 1);
+			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, 0);
 		} else {
 			this.OrientationAngles = CFrame.Angles(0, 0, 0);
 		}
