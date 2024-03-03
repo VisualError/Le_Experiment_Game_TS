@@ -139,15 +139,21 @@ class ProceduralAnimator {
 		const waistjoint = this.RootMotor!;
 		const waist1 = this.RootMotorC1Store!;
 		const rootvel = rootVelocity;
-		const raycastResult = Workspace.Raycast(lowercf.Position, DOWN, this.RaycastParams);
-		let V2S: Vector3 | undefined = undefined;
+		const lookVector = lowercf.LookVector;
+		const raycastResult = Workspace.Raycast(lowercf.Position, DOWN.mul(2), this.RaycastParams);
 		if (raycastResult) {
-			V2S = this.RootPart.CFrame.VectorToObjectSpace(raycastResult.Normal);
+			const V2S = lowercf.VectorToObjectSpace(raycastResult.Normal);
+			const dot = lookVector.Dot(raycastResult.Normal);
+			const uvx = lookVector.Cross(raycastResult.Normal);
+			const angle = math.atan(dot);
 			this.OrientationAngles = CFrame.Angles(V2S.Z, V2S.X, 0);
+			if (V2S.Y <= 0.99) {
+				this.OrientationAngles = this.OrientationAngles.mul(new CFrame(0, dot, 0));
+			}
+			print(this.OrientationAngles);
 		} else {
 			this.OrientationAngles = CFrame.Angles(0, 0, 0);
 		}
-		const val = raycastResult ? raycastResult?.Normal.Y : 0;
 		if (this.IsMoving) {
 			this.WaistCycle = (this.WaistCycle! + stepCycle) % 360;
 			const relv0 = lowercf.VectorToObjectSpace(rootvel);
@@ -158,7 +164,7 @@ class ProceduralAnimator {
 			const swayY = 0.1 * math.cos(this.WaistCycle) - 2 * math.rad(relv1.X);
 			const swayX = math.rad(relv1.Z) * 0.5 * this.SwayX;
 			const goalCF = bounceCFrame.mul(
-				waist1.mul(ANGLES(swayX, swayY, sway).Inverse().mul(this.OrientationAngles)),
+				waist1.mul(ANGLES(swayX, swayY, sway).Inverse()).mul(this.OrientationAngles),
 			);
 			// Apply the desired orientation to the goalCF
 			//goalCF = goalCF.mul(surfaceNormal.Rotation);
