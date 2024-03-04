@@ -2,7 +2,6 @@ import { Controller, OnStart } from "@flamework/core";
 import { Players, RunService, Workspace, UserInputService } from "@rbxts/services";
 import Spring from "@rbxts/spring";
 import { EventController } from "./EventController";
-
 type PositionProvider = {
 	getPosition(): Vector3;
 	getCFrame(): CFrame;
@@ -47,7 +46,6 @@ class ModelPositionProvider implements PositionProvider {
 @Controller()
 export class CameraController implements OnStart {
 	spring?: Spring<Vector3>;
-	oldMousePos?: Vector3; // Track the previous mouse position
 	cameraOffset = new Vector3(0, 0, 5); // Initial camera offset
 	private static target?: PositionProvider;
 	private static dampening = 6;
@@ -63,14 +61,20 @@ export class CameraController implements OnStart {
 
 	onStart(): void {
 		print("Camera Controller has started!");
-		this.eventController.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
+		//this.eventController.maid.GiveTask(RunService.RenderStepped.Connect((dt) => this.Connection(dt)));
+		RunService.BindToRenderStep("CustomCameraController", Enum.RenderPriority.Camera.Value, (dt: number) =>
+			this.Connection(dt),
+		);
 		// Listen for right-click to start orbiting
 		this.eventController.maid.GiveTask(
 			UserInputService.InputBegan.Connect((input, gameProcessedEvent) => {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
-				if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-					this.oldMousePos = input.Position;
+				if (
+					input.UserInputType === Enum.UserInputType.MouseButton2 ||
+					input.UserInputType === Enum.UserInputType.Touch
+				) {
+					UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition;
 				}
 				if (input.UserInputType === Enum.UserInputType.Keyboard) {
 					if (input.KeyCode === Enum.KeyCode.E) {
@@ -123,7 +127,7 @@ export class CameraController implements OnStart {
 				if (gameProcessedEvent) return; // Ignore inputs already processed by the game
 
 				if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-					this.oldMousePos = undefined;
+					UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
 				}
 				if (input.UserInputType === Enum.UserInputType.Keyboard) {
 					switch (input.KeyCode) {
@@ -153,23 +157,23 @@ export class CameraController implements OnStart {
 							math.clamp(this.cameraOffset.Z, CameraController.minDistance, CameraController.maxDistance),
 						);
 						break;
-					case Enum.UserInputType.MouseMovement:
-						const newMousePos = input.Position;
-						if (this.oldMousePos) {
-							const delta = newMousePos.sub(this.oldMousePos);
-							this.oldMousePos = newMousePos; // Update oldMousePos for the next delta calculation
-							if (CameraController.target) {
-								// Accumulate the rotation angles
-								const mouseSensitivity = UserSettings().GetService("UserGameSettings").MouseSensitivity;
-								this.accumulatedHorizontalAngle += delta.X * mouseSensitivity * 0.5;
-								this.accumulatedVerticalAngle += delta.Y * mouseSensitivity * 0.5;
+					// case Enum.UserInputType.MouseMovement:
+					// 	const newMousePos = input.Position;
+					// 	if (this.oldMousePos) {
+					// 		const delta = UserInputService.GetMouseDelta();
+					// 		this.oldMousePos = newMousePos; // Update oldMousePos for the next delta calculation
+					// 		if (CameraController.target) {
+					// 			// Accumulate the rotation angles
+					// 			//const mouseSensitivity = UserSettings().GetService("UserGameSettings").MouseSensitivity;
+					// 			this.accumulatedHorizontalAngle += delta.X * 0.5;
+					// 			this.accumulatedVerticalAngle += delta.Y * 0.5;
 
-								// Clamp the accumulated vertical angle to prevent the camera from turning upside down
-								// This example clamps the vertical angle between -80 and 80 degrees
-								this.accumulatedVerticalAngle = math.clamp(this.accumulatedVerticalAngle, -80, 80);
-							}
-						}
-						break;
+					// 			// Clamp the accumulated vertical angle to prevent the camera from turning upside down
+					// 			// This example clamps the vertical angle between -80 and 80 degrees
+					// 			this.accumulatedVerticalAngle = math.clamp(this.accumulatedVerticalAngle, -80, 80);
+					// 		}
+					// 	}
+					// 	break;
 				}
 			}),
 		);
@@ -227,15 +231,18 @@ export class CameraController implements OnStart {
 		}
 		const targetPosition = CameraController.target.getCFrame().Position;
 		const targetRotation = CameraController.target.getCFrame().Rotation; // Not using this yet..
-		// Calculate the camera's rotation based on the accumalated angles.
+		const mouseDelta = UserInputService.GetMouseDelta();
+		this.accumulatedHorizontalAngle += mouseDelta.X * 0.5;
+		this.accumulatedVerticalAngle += math.clamp(mouseDelta.Y * 0.5, -80, 80);
 
+		// Handle the left/right arrow keys.
 		if (CameraController.isLeftHeld) {
 			this.accumulatedHorizontalAngle -= 200 * dt;
 		}
 		if (CameraController.isRightHeld) {
 			this.accumulatedHorizontalAngle += 200 * dt;
 		}
-
+		// Calculate the camera's rotation based on the accumalated angles
 		const rotationCFrame = new CFrame()
 			.mul(CFrame.Angles(0, math.rad(this.accumulatedHorizontalAngle), 0))
 			.mul(CFrame.Angles(math.rad(this.accumulatedVerticalAngle), 0, 0));
