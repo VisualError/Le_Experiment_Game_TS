@@ -154,8 +154,6 @@ export class CameraInput implements OnStart {
 		return Enum.ContextActionResult.Pass;
 	}
 	static mobilePanBegan(this: void, input: InputObject, sunk: boolean) {
-		assert(input.UserInputType === Enum.UserInputType.Touch);
-		assert(input.UserInputState === Enum.UserInputState.Begin);
 		if (
 			CameraInput.dynamicThumbstickInput === undefined &&
 			CameraInput.isInDynamicThumbstickArea(input.Position) &&
@@ -165,37 +163,32 @@ export class CameraInput implements OnStart {
 			return;
 		}
 		if (!sunk) {
-			CameraInput.desktopPanBegan();
+			CameraInput.increasePanInputCount();
 		}
 
 		CameraInput.touches.set(input, sunk);
 	}
 	static mobilePanEnded(this: void, input: InputObject, sunk: boolean) {
-		assert(input.UserInputType === Enum.UserInputType.Touch);
-		assert(input.UserInputState === Enum.UserInputState.End);
-		print("mobile pan ended");
 		if (input === CameraInput.dynamicThumbstickInput) {
 			CameraInput.dynamicThumbstickInput = undefined;
 		}
 		if (CameraInput.touches.get(input) === false) {
-			CameraInput.desktopPanEnded();
+			CameraInput.lastPinchDiameter = undefined;
+			CameraInput.decreasePanInputCount();
 		}
+		// unregister the input.
 		CameraInput.touches.delete(input);
 	}
-	static desktopPanBegan(this: void) {
-		print("desktop pan began");
+	static increasePanInputCount(this: void) {
 		CameraInput.panInputCount = math.max(0, CameraInput.panInputCount + 1);
 	}
-	static desktopPanEnded(this: void) {
-		print("desktop pan ended");
+	static decreasePanInputCount(this: void) {
 		CameraInput.panInputCount = math.max(0, CameraInput.panInputCount - 1);
 	}
 	static getRotationActivated(): boolean {
 		return CameraInput.panInputCount > 0 || CameraInput.gamePadState.Thumbstick2.Magnitude > 0;
 	}
 	static mobilePan(this: void, input: InputObject, sunk: boolean) {
-		assert(input.UserInputType === Enum.UserInputType.Touch);
-		assert(input.UserInputState === Enum.UserInputState.Change);
 		//ignore movement from the DT finger
 		if (input === CameraInput.dynamicThumbstickInput) return;
 		//fixup unknown touches
@@ -203,7 +196,7 @@ export class CameraInput implements OnStart {
 			CameraInput.touches.set(input, sunk);
 		}
 		const unsunkTouches = new Array<InputObject>();
-		for (const [touch, sunk] of CameraInput.touches) {
+		for (const [touch, sunk] of pairs(CameraInput.touches)) {
 			if (!sunk) {
 				unsunkTouches.push(touch);
 			}
@@ -217,8 +210,9 @@ export class CameraInput implements OnStart {
 			}
 		}
 
+		// TWO FINGERS: ZOOM
 		if (unsunkTouches.size() === 2) {
-			const pinchDiameter = unsunkTouches[1].Position.sub(unsunkTouches[2].Position).Magnitude;
+			const pinchDiameter = unsunkTouches[0].Position.sub(unsunkTouches[1].Position).Magnitude;
 			if (CameraInput.lastPinchDiameter !== undefined) {
 				CameraInput.touchState.Pinch =
 					CameraInput.touchState.Pinch + pinchDiameter - CameraInput.lastPinchDiameter;
@@ -269,7 +263,7 @@ export class CameraInput implements OnStart {
 						CameraInput.mobilePanBegan(input, sunk);
 						break;
 					case Enum.UserInputType.MouseButton2:
-						CameraInput.desktopPanBegan();
+						CameraInput.increasePanInputCount();
 						UserInputService.MouseBehavior = Enum.MouseBehavior.LockCurrentPosition;
 						break;
 				}
@@ -294,7 +288,7 @@ export class CameraInput implements OnStart {
 						CameraInput.mobilePanEnded(input, sunk);
 						break;
 					case Enum.UserInputType.MouseButton2:
-						CameraInput.desktopPanEnded();
+						CameraInput.decreasePanInputCount();
 						UserInputService.MouseBehavior = Enum.MouseBehavior.Default;
 						break;
 				}
@@ -320,7 +314,7 @@ function adjustTouchPitchSensitivity(delta: Vector2): Vector2 {
 	if (X * Y * Z * delta.Y >= 0) {
 		return delta;
 	}
-	const curveY = (1 - (2 * math.abs(X * Y * Z)) / math.pi) ^ 0.75;
+	const curveY = 1 - ((2 * math.abs((X * Y * Z) / math.pi)) ^ 0.75);
 	const sensitivity = curveY * (1 - MIN_TOUCH_SENSITIVITY_FRACTION) + MIN_TOUCH_SENSITIVITY_FRACTION;
 	return new Vector2(1, sensitivity).mul(delta);
 }
